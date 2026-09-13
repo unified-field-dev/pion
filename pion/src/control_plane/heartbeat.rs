@@ -32,7 +32,7 @@ use super::contracts::map_health_to_observed_enum;
 use super::{derive_observed_health, map_health_to_node_status, NodeHeartbeatReport};
 
 async fn ensure_cell_exists(cell_id: &str, valence: &Valence) -> Result<()> {
-    if PionControlPlaneCell::get_used(cell_id, valence, valence::use_!("get PionControlPlaneCell in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    if PionControlPlaneCell::get_used(cell_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Control Plane Cell** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load cell {cell_id} for heartbeat ingest"))?
         .is_some()
@@ -56,7 +56,7 @@ async fn ensure_cell_exists(cell_id: &str, valence: &Valence) -> Result<()> {
         now,
     )
     .context("build control plane cell row")?;
-    PionControlPlaneCell::upsert_used(cell_id, record, valence, valence::use_!("upsert PionControlPlaneCell in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    PionControlPlaneCell::upsert_used(cell_id, record, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Cell** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#))
         .await
         .with_context(|| format!("upsert control plane cell {cell_id}"))?;
     Ok(())
@@ -78,11 +78,11 @@ async fn upsert_node_record(
     now: chrono::DateTime<Utc>,
     valence: &Valence,
 ) -> Result<()> {
-    if let Some(existing) = PionControlPlaneNode::get_used(&report.node_id, valence, valence::use_!("get PionControlPlaneNode in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    if let Some(existing) = PionControlPlaneNode::get_used(&report.node_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Control Plane Node** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load node {} for heartbeat upsert", report.node_id))?
     {
-        let mutable = PionControlPlaneNodeMutable::get_used(&report.node_id, valence, valence::use_!("get PionControlPlaneNodeMutable in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+        let mutable = PionControlPlaneNodeMutable::get_used(&report.node_id, valence, valence::use_!(r#"In **Pion control plane**, we **update Pion Control Plane Node Mutable** in place so saved changes apply on the next read. The same actors who can run **Pion control plane** use the updated values; this step is not a silent copy to an external marketing system."#))
             .await
             .with_context(|| {
                 format!("load mutable node {} for heartbeat upsert", report.node_id)
@@ -114,7 +114,7 @@ async fn upsert_node_record(
         now,
     )
     .context("build control plane node row")?;
-    PionControlPlaneNode::upsert_used(&report.node_id, node, valence, valence::use_!("upsert PionControlPlaneNode in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    PionControlPlaneNode::upsert_used(&report.node_id, node, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Node** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#))
         .await
         .with_context(|| format!("upsert control plane node {}", report.node_id))?;
     Ok(())
@@ -130,12 +130,12 @@ async fn upsert_node_reachability(
     let peer_trim = peer_ip.map(str::trim).filter(|s| !s.is_empty());
     let node_rid = valence::RecordId::new("pion_control_plane_node", node_id);
 
-    match PionNodeReachability::get_used(node_id, valence, valence::use_!("get PionNodeReachability in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    match PionNodeReachability::get_used(node_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Node Reachability** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load reachability row for node {node_id}"))?
     {
         Some(existing) => {
-            let mut m = PionNodeReachabilityMutable::get_used(node_id, valence, valence::use_!("get PionNodeReachabilityMutable in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+            let mut m = PionNodeReachabilityMutable::get_used(node_id, valence, valence::use_!(r#"In **Pion control plane**, we **update Pion Node Reachability Mutable** in place so saved changes apply on the next read. The same actors who can run **Pion control plane** use the updated values; this step is not a silent copy to an external marketing system."#))
                 .await
                 .with_context(|| format!("load mutable reachability row for node {node_id}"))?;
             if let Some(p) = peer_trim {
@@ -165,7 +165,7 @@ async fn upsert_node_reachability(
                     now,
                 )
                 .context("build node reachability row")?;
-                PionNodeReachability::upsert_used(node_id, row, valence, valence::use_!("upsert PionNodeReachability in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+                PionNodeReachability::upsert_used(node_id, row, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Node Reachability** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#))
                     .await
                     .with_context(|| format!("upsert reachability row for node {node_id}"))?;
             }
@@ -191,7 +191,7 @@ async fn upsert_observed_status(report: &NodeHeartbeatReport, valence: &Valence)
         report.observed_at,
     )
     .context("build observed status row")?;
-    PionControlPlaneObservedStatus::upsert_used(&observed_id, observed, valence, valence::use_!("upsert PionControlPlaneObservedStatus in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    PionControlPlaneObservedStatus::upsert_used(&observed_id, observed, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Observed Status** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#))
         .await
         .with_context(|| format!("upsert observed status {observed_id}"))?;
     Ok(())
@@ -223,7 +223,7 @@ pub async fn ingest_node_heartbeat(
     peer_ip: Option<&str>,
     valence: &Valence,
 ) -> Result<parton::HeartbeatResponse> {
-    let node_exists = PionControlPlaneNode::get_used(&report.node_id, valence, valence::use_!("get PionControlPlaneNode in src/control_plane/heartbeat.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let node_exists = PionControlPlaneNode::get_used(&report.node_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Control Plane Node** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| {
             format!(

@@ -108,7 +108,7 @@ async fn ensure_node_enqueueable(
     action_kind: &str,
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
-    let node = PionControlPlaneNode::get_used(node_id, valence, valence::use_!("get PionControlPlaneNode in control_plane/node_actions/enqueue.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let node = PionControlPlaneNode::get_used(node_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Control Plane Node** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load node {node_id} for enqueue"))
         .map_err(NodeActionError::Internal)?
@@ -245,7 +245,7 @@ pub async fn enqueue_node_action_idempotent(
         now,
     )
     .context("build node action command row for enqueue")?;
-    PionNodeActionCommand::upsert_used(&cmd_id, row, valence, valence::use_!("upsert PionNodeActionCommand in control_plane/node_actions/enqueue.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    PionNodeActionCommand::upsert_used(&cmd_id, row, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Node Action Command** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#))
         .await
         .with_context(|| format!("upsert node action command {cmd_id}"))?;
     tracing::info!(

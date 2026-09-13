@@ -35,7 +35,7 @@ async fn load_pending_enrollment_row(
     valence: &Valence,
     enrollment_id: &str,
 ) -> Result<PionAgentHostEnrollment, EnrollmentError> {
-    let row = PionAgentHostEnrollment::get_used(enrollment_id, valence, valence::use_!("get PionAgentHostEnrollment in control_plane/agent_enrollment/verify.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let row = PionAgentHostEnrollment::get_used(enrollment_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Agent Host Enrollment** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} for verify"))
         .map_err(EnrollmentError::Internal)?
@@ -193,7 +193,7 @@ pub async fn mark_enrollment_claimed(
         Err(EnrollmentError::NotPending) => return Ok(()),
         Err(e) => return Err(e),
     };
-    let row = PionAgentHostEnrollment::get_used(&enrollment_id, valence, valence::use_!("get PionAgentHostEnrollment in control_plane/agent_enrollment/verify.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let row = PionAgentHostEnrollment::get_used(&enrollment_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Agent Host Enrollment** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to mark claimed"))?
         .ok_or(EnrollmentError::UnknownId)?;
@@ -202,7 +202,7 @@ pub async fn mark_enrollment_claimed(
     }
     let session_id_for_photon = row.setup_wizard_session_id().clone();
     let now = Utc::now();
-    let m = PionAgentHostEnrollmentMutable::get_used(&enrollment_id, valence, valence::use_!("get PionAgentHostEnrollmentMutable in control_plane/agent_enrollment/verify.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let m = PionAgentHostEnrollmentMutable::get_used(&enrollment_id, valence, valence::use_!(r#"In **Pion control plane**, we **update Pion Agent Host Enrollment Mutable** in place so saved changes apply on the next read. The same actors who can run **Pion control plane** use the updated values; this step is not a silent copy to an external marketing system."#))
         .await
         .with_context(|| format!("load mutable enrollment {enrollment_id} to mark claimed"))?;
     m.set_status(PionAgentHostEnrollmentStatus::Claimed)?

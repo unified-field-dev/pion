@@ -30,7 +30,7 @@ async fn prior_sequences_terminal(
     if correlation_key.is_empty() || sequence <= 0 {
         return Ok(true);
     }
-    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("query PionNodeActionCommand in control_plane/node_actions/claim.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let rows = PionNodeActionCommand::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .where_node_id(StringPredicate::Equals(node_id.to_string()))
         .await
@@ -59,7 +59,7 @@ async fn resolve_claim_payload_or_mark_failed(
         return Ok(true);
     }
     let Some(res) = default_secret_resolver() else {
-        PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/claim.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+        PionNodeActionCommandMutable::get_used(id, valence, valence::use_!(r#"In **Pion control plane**, we **update Pion Node Action Command Mutable** in place so saved changes apply on the next read. The same actors who can run **Pion control plane** use the updated values; this step is not a silent copy to an external marketing system."#))
             .await
             .with_context(|| format!("load command {id} to mark secret-resolver-missing failure"))?
             .set_status(PionNodeActionCommandStatus::Failed)?
@@ -77,7 +77,7 @@ async fn resolve_claim_payload_or_mark_failed(
         return Ok(false);
     };
     if let Err(e) = resolve_secrets_in_json(valence, res.as_ref(), out_payload).await {
-        PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/claim.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+        PionNodeActionCommandMutable::get_used(id, valence, valence::use_!(r#"In **Pion control plane**, we **update Pion Node Action Command Mutable** in place so saved changes apply on the next read. The same actors who can run **Pion control plane** use the updated values; this step is not a silent copy to an external marketing system."#))
             .await
             .with_context(|| format!("load command {id} to mark secret resolution failure"))?
             .set_status(PionNodeActionCommandStatus::Failed)?
@@ -175,7 +175,7 @@ async fn claim_pending_node_action_locked(
     valence: &Valence,
 ) -> Result<Option<ClaimedNodeAction>> {
     let lease_secs = lease_duration_secs.max(1);
-    let mut pending: Vec<_> = PionNodeActionCommand::query_used(valence, valence::use_!("query PionNodeActionCommand in control_plane/node_actions/claim.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let mut pending: Vec<_> = PionNodeActionCommand::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#))
         .where_node_id(StringPredicate::Equals(node_id.to_string()))
         .where_status(StringPredicate::Equals(
             PionNodeActionCommandStatus::Pending.as_str().to_string(),
@@ -239,7 +239,7 @@ async fn try_claim_candidate(
         return Ok(None);
     }
 
-    let mut_row = match PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/claim.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await {
+    let mut_row = match PionNodeActionCommandMutable::get_used(id, valence, valence::use_!(r#"In **Pion control plane**, we **update Pion Node Action Command Mutable** in place so saved changes apply on the next read. The same actors who can run **Pion control plane** use the updated values; this step is not a silent copy to an external marketing system."#)).await {
         Ok(r) => r,
         Err(ValenceError::PendingDeletion(_)) => return Ok(None),
         Err(e) => {

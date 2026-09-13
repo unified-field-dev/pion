@@ -242,7 +242,7 @@ pub async fn list_agent_nodes_for_cell(
     cell_id: &str,
 ) -> Result<Vec<(String, String)>> {
     let target = cell_id.trim();
-    let nodes = PionControlPlaneNode::query_used(valence, valence::use_!("query PionControlPlaneNode in src/control_plane/projections.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
+    let nodes = PionControlPlaneNode::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#)).await?;
     let mut out: Vec<(String, String)> = nodes
         .into_iter()
         .filter(|n| {
@@ -269,8 +269,8 @@ pub async fn list_agent_nodes_for_cell(
 pub async fn list_runtime_container_snapshots(
     valence: &Valence,
 ) -> Result<Vec<RuntimeContainerSnapshot>> {
-    let nodes = PionControlPlaneNode::query_used(valence, valence::use_!("query PionControlPlaneNode in src/control_plane/projections.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
-    let observed = PionControlPlaneObservedStatus::query_used(valence, valence::use_!("query PionControlPlaneObservedStatus in src/control_plane/projections.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
+    let nodes = PionControlPlaneNode::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#)).await?;
+    let observed = PionControlPlaneObservedStatus::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Control Plane Observed Status** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#)).await?;
     let now = Utc::now();
 
     let mut newest_by_node: HashMap<String, PionControlPlaneObservedStatus> = HashMap::new();
@@ -325,7 +325,7 @@ pub async fn list_runtime_container_snapshots(
 pub async fn list_runtime_health_snapshots(
     valence: &Valence,
 ) -> Result<Vec<RuntimeHealthSnapshot>> {
-    let observed = PionControlPlaneObservedStatus::query_used(valence, valence::use_!("query PionControlPlaneObservedStatus in src/control_plane/projections.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
+    let observed = PionControlPlaneObservedStatus::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Control Plane Observed Status** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#)).await?;
     let now = Utc::now();
     let mut rows = observed
         .into_iter()

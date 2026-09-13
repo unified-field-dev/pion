@@ -74,7 +74,7 @@ async fn persist_action_event(
         observed_at,
         observed_at,
     )?;
-    PionControlPlaneActionEvent::upsert_used(&event_id, record, valence, valence::use_!("upsert PionControlPlaneActionEvent in src/control_plane/actions.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
+    PionControlPlaneActionEvent::upsert_used(&event_id, record, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Action Event** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#)).await?;
     Ok(RuntimeContainerActionResult {
         event_id,
         node_id: node_id.to_string(),

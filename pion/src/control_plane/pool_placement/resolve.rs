@@ -80,7 +80,7 @@ pub async fn resolve_eligible_pool_nodes(
     requirements: &NodeHardwareRequirements,
     valence: &Valence,
 ) -> Result<Vec<EligiblePoolNode>, PoolResolutionError> {
-    let pool = PionControlPlaneVirtualPool::get_used(pool_id, valence, valence::use_!("get PionControlPlaneVirtualPool in control_plane/pool_placement/resolve.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let pool = PionControlPlaneVirtualPool::get_used(pool_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Control Plane Virtual Pool** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
         .await
         .with_context(|| format!("load pool {pool_id} for placement resolution"))?
         .ok_or_else(|| PoolResolutionError::PoolNotFound {
@@ -156,7 +156,7 @@ async fn enabled_cell_ids(
     pool_id: &str,
     valence: &Valence,
 ) -> Result<HashSet<String>, PoolResolutionError> {
-    let cells = PionControlPlanePoolCellMap::query_used(valence, valence::use_!("query PionControlPlanePoolCellMap in control_plane/pool_placement/resolve.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let cells = PionControlPlanePoolCellMap::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Control Plane Pool Cell Map** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#))
         .await
         .with_context(|| format!("query pool-cell map for pool {pool_id}"))?
         .into_iter()
@@ -181,7 +181,7 @@ async fn reachable_nodes_in_cells(
     cells: &HashSet<String>,
     valence: &Valence,
 ) -> Result<Vec<(String, PionControlPlaneNode)>, PoolResolutionError> {
-    let in_cells = PionControlPlaneNode::query_used(valence, valence::use_!("query PionControlPlaneNode in control_plane/pool_placement/resolve.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+    let in_cells = PionControlPlaneNode::query_used(valence, valence::use_!(r#"In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."#))
         .await
         .context("query nodes for pool placement resolution")?
         .into_iter()
