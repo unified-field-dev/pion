@@ -28,7 +28,7 @@ async fn reconcile_stale_pending_node_action(
     now: chrono::DateTime<Utc>,
 ) -> Result<()> {
     if is_node_recently_heartbeating(valence, cmd.node_id(), 60).await {
-        if PionNodeActionCommandMutable::get(id, valence)
+        if PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("load command {id} to extend pending window"))?
             .set_created_at(now)?
@@ -45,7 +45,7 @@ async fn reconcile_stale_pending_node_action(
         }
         return Ok(());
     }
-    if PionNodeActionCommandMutable::get(id, valence)
+    if PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {id} to mark stale-pending timeout"))?
         .set_status(PionNodeActionCommandStatus::Failed)?
@@ -69,7 +69,7 @@ async fn reconcile_expired_lease_node_action(
     now: chrono::DateTime<Utc>,
 ) -> Result<()> {
     if *cmd.attempt() >= *cmd.max_attempts() {
-        if PionNodeActionCommandMutable::get(id, valence)
+        if PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("load command {id} to mark max-attempts lease expiry"))?
             .set_status(PionNodeActionCommandStatus::Failed)?
@@ -82,7 +82,7 @@ async fn reconcile_expired_lease_node_action(
             crate::bootstrap_notify::notify_if_wizard_run(valence, ck).await;
             crate::maybe_publish_setup_wizard_tracked_photon(ck, "failed").await;
         }
-    } else if PionNodeActionCommandMutable::get(id, valence)
+    } else if PionNodeActionCommandMutable::get_used(id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {id} to retry after lease expiry"))?
         .set_status(PionNodeActionCommandStatus::Pending)?
@@ -104,7 +104,7 @@ async fn reconcile_expired_lease_node_action(
 ///
 /// Returns `Err` when the command is unknown or Valence update fails.
 pub async fn cancel_node_action(command_id: &str, valence: &Valence) -> Result<()> {
-    let cmd = PionNodeActionCommand::get(command_id, valence)
+    let cmd = PionNodeActionCommand::get_used(command_id, valence, valence::use_!("get PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {command_id} for cancel"))?
         .ok_or_else(|| anyhow!("unknown command {command_id}"))?;
@@ -117,7 +117,7 @@ pub async fn cancel_node_action(command_id: &str, valence: &Valence) -> Result<(
 }
 
 async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence) -> Result<bool> {
-    let cmd = PionNodeActionCommand::get(command_id, valence)
+    let cmd = PionNodeActionCommand::get_used(command_id, valence, valence::use_!("get PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {command_id} for cancel-if-non-terminal"))?
         .ok_or_else(|| anyhow!("unknown command {command_id}"))?;
@@ -130,7 +130,7 @@ async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence)
         return Ok(false);
     }
     let now = Utc::now();
-    PionNodeActionCommandMutable::get(command_id, valence)
+    PionNodeActionCommandMutable::get_used(command_id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {command_id} to cancel"))?
         .set_status(PionNodeActionCommandStatus::Cancelled)?
@@ -148,7 +148,7 @@ async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence)
 /// Propagates Valence query or update failures.
 pub async fn reconcile_node_action_commands(valence: &Valence) -> Result<()> {
     let now = Utc::now();
-    let rows = PionNodeActionCommand::query(valence)
+    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("query PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .context("query node action commands for reconcile")?;
 
@@ -246,7 +246,7 @@ pub async fn cancel_non_terminal_node_actions_for_correlation(
     if correlation_key.trim().is_empty() {
         return Ok(());
     }
-    let rows = PionNodeActionCommand::query(valence)
+    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("query PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .await
         .with_context(|| format!("query node action commands for correlation {correlation_key}"))?;
@@ -284,7 +284,7 @@ pub async fn reset_failed_node_actions_for_correlation(
     if correlation_key.trim().is_empty() {
         return Ok(None);
     }
-    let rows = PionNodeActionCommand::query(valence)
+    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("query PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .await
         .with_context(|| format!("query node action commands for correlation {correlation_key}"))?;
@@ -309,7 +309,7 @@ pub async fn reset_failed_node_actions_for_correlation(
             else {
                 continue;
             };
-            PionNodeActionCommandMutable::get(&id, valence)
+            PionNodeActionCommandMutable::get_used(&id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                 .await
                 .with_context(|| format!("load command {id} to reset for replan"))?
                 .set_status(PionNodeActionCommandStatus::Pending)?
@@ -331,7 +331,7 @@ pub async fn reset_failed_node_actions_for_correlation(
 
     let min_cleanup = failed_min_seq.unwrap_or(1);
 
-    let rows2 = PionNodeActionCommand::query(valence)
+    let rows2 = PionNodeActionCommand::query_used(valence, valence::use_!("query PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .await
         .with_context(|| {
@@ -383,7 +383,7 @@ pub async fn extend_node_action_lease(
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
     let add = additional_secs.max(1);
-    let cmd = PionNodeActionCommand::get(command_id, valence)
+    let cmd = PionNodeActionCommand::get_used(command_id, valence, valence::use_!("get PionNodeActionCommand in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {command_id} for lease extend"))?
         .ok_or_else(|| NodeActionError::CommandNotFound {
@@ -409,7 +409,7 @@ pub async fn extend_node_action_lease(
         now
     };
     let new_end = base + duration_from_u64_secs(add);
-    PionNodeActionCommandMutable::get(command_id, valence)
+    PionNodeActionCommandMutable::get_used(command_id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/lifecycle.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {command_id} to extend lease"))?
         .set_lease_expires_at(new_end)?

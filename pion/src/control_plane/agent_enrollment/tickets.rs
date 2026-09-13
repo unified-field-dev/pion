@@ -79,7 +79,7 @@ pub async fn create_host_enrollment(
         None,
     )
     .context("build host enrollment row")?;
-    PionAgentHostEnrollment::upsert(&enrollment_id, row, valence)
+    PionAgentHostEnrollment::upsert_used(&enrollment_id, row, valence, valence::use_!("upsert PionAgentHostEnrollment in control_plane/agent_enrollment/tickets.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("upsert host enrollment {enrollment_id}"))?;
     tracing::info!(
@@ -107,7 +107,7 @@ pub async fn set_host_enrollment_pubkey(
     enrollment_id: &str,
     enrollment_pubkey_b64: &str,
 ) -> Result<()> {
-    let row = PionAgentHostEnrollment::get(enrollment_id, valence)
+    let row = PionAgentHostEnrollment::get_used(enrollment_id, valence, valence::use_!("get PionAgentHostEnrollment in control_plane/agent_enrollment/tickets.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to set pubkey"))?
         .ok_or_else(|| anyhow!("enrollment {enrollment_id} not found"))?;
@@ -118,7 +118,7 @@ pub async fn set_host_enrollment_pubkey(
     if pk.is_empty() {
         anyhow::bail!("enrollment_pubkey is empty");
     }
-    let m = PionAgentHostEnrollmentMutable::get(enrollment_id, valence)
+    let m = PionAgentHostEnrollmentMutable::get_used(enrollment_id, valence, valence::use_!("get PionAgentHostEnrollmentMutable in control_plane/agent_enrollment/tickets.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load mutable enrollment {enrollment_id} to set pubkey"))?
         .set_enrollment_pubkey(pk.to_string())
@@ -135,7 +135,7 @@ pub async fn set_host_enrollment_pubkey(
 ///
 /// Returns `Err` when the enrollment is missing or Valence update fails.
 pub async fn revoke_host_enrollment(valence: &Valence, enrollment_id: &str) -> Result<()> {
-    let row = PionAgentHostEnrollment::get(enrollment_id, valence)
+    let row = PionAgentHostEnrollment::get_used(enrollment_id, valence, valence::use_!("get PionAgentHostEnrollment in control_plane/agent_enrollment/tickets.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to revoke"))?
         .ok_or_else(|| anyhow!("enrollment not found"))?;
@@ -145,7 +145,7 @@ pub async fn revoke_host_enrollment(valence: &Valence, enrollment_id: &str) -> R
     let session_id_for_photon = row.setup_wizard_session_id().clone();
     let enrollment_id_owned = enrollment_id.to_string();
     let now = Utc::now();
-    let m = PionAgentHostEnrollmentMutable::get(enrollment_id, valence)
+    let m = PionAgentHostEnrollmentMutable::get_used(enrollment_id, valence, valence::use_!("get PionAgentHostEnrollmentMutable in control_plane/agent_enrollment/tickets.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load mutable enrollment {enrollment_id} to revoke"))?;
     m.set_status(PionAgentHostEnrollmentStatus::Revoked)?
@@ -191,7 +191,7 @@ pub async fn list_enrollments_for_bootstrap_session(
     valence: &Valence,
     bootstrap_session_id: &str,
 ) -> Result<Vec<PionAgentHostEnrollment>> {
-    let mut rows = PionAgentHostEnrollment::query(valence)
+    let mut rows = PionAgentHostEnrollment::query_used(valence, valence::use_!("query PionAgentHostEnrollment in control_plane/agent_enrollment/tickets.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .context("query host enrollments for session list")?;
     let q = bootstrap_session_id.trim();

@@ -80,7 +80,7 @@ pub async fn resolve_eligible_pool_nodes(
     requirements: &NodeHardwareRequirements,
     valence: &Valence,
 ) -> Result<Vec<EligiblePoolNode>, PoolResolutionError> {
-    let pool = PionControlPlaneVirtualPool::get(pool_id, valence)
+    let pool = PionControlPlaneVirtualPool::get_used(pool_id, valence, valence::use_!("get PionControlPlaneVirtualPool in control_plane/pool_placement/resolve.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load pool {pool_id} for placement resolution"))?
         .ok_or_else(|| PoolResolutionError::PoolNotFound {
@@ -156,7 +156,7 @@ async fn enabled_cell_ids(
     pool_id: &str,
     valence: &Valence,
 ) -> Result<HashSet<String>, PoolResolutionError> {
-    let cells = PionControlPlanePoolCellMap::query(valence)
+    let cells = PionControlPlanePoolCellMap::query_used(valence, valence::use_!("query PionControlPlanePoolCellMap in control_plane/pool_placement/resolve.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("query pool-cell map for pool {pool_id}"))?
         .into_iter()
@@ -181,7 +181,7 @@ async fn reachable_nodes_in_cells(
     cells: &HashSet<String>,
     valence: &Valence,
 ) -> Result<Vec<(String, PionControlPlaneNode)>, PoolResolutionError> {
-    let in_cells = PionControlPlaneNode::query(valence)
+    let in_cells = PionControlPlaneNode::query_used(valence, valence::use_!("query PionControlPlaneNode in control_plane/pool_placement/resolve.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .context("query nodes for pool placement resolution")?
         .into_iter()

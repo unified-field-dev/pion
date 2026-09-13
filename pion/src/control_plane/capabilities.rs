@@ -81,7 +81,7 @@ pub(crate) async fn ensure_default_node_action_capabilities(
     let now = Utc::now();
     for action in all_container_action_kinds() {
         let id = capability_row_id(node_id, action);
-        if PionControlPlaneNodeActionCapability::get(&id, valence)
+        if PionControlPlaneNodeActionCapability::get_used(&id, valence, valence::use_!("get PionControlPlaneNodeActionCapability in src/control_plane/capabilities.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("load default capability row {id}"))?
             .is_some()
@@ -99,7 +99,7 @@ pub(crate) async fn ensure_default_node_action_capabilities(
             now,
         )
         .context("build default capability row")?;
-        PionControlPlaneNodeActionCapability::upsert(&id, record, valence)
+        PionControlPlaneNodeActionCapability::upsert_used(&id, record, valence, valence::use_!("upsert PionControlPlaneNodeActionCapability in src/control_plane/capabilities.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("upsert default capability row {id}"))?;
     }
@@ -122,7 +122,7 @@ pub async fn upsert_node_action_capability(
 ) -> Result<()> {
     let now = Utc::now();
     let id = capability_row_id(node_id, action);
-    let created_at = if let Some(existing) = PionControlPlaneNodeActionCapability::get(&id, valence)
+    let created_at = if let Some(existing) = PionControlPlaneNodeActionCapability::get_used(&id, valence, valence::use_!("get PionControlPlaneNodeActionCapability in src/control_plane/capabilities.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load capability row {id} for upsert"))?
     {
@@ -141,7 +141,7 @@ pub async fn upsert_node_action_capability(
         now,
     )
     .context("build capability row")?;
-    PionControlPlaneNodeActionCapability::upsert(&id, record, valence)
+    PionControlPlaneNodeActionCapability::upsert_used(&id, record, valence, valence::use_!("upsert PionControlPlaneNodeActionCapability in src/control_plane/capabilities.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("upsert capability row {id}"))?;
     tracing::info!(
@@ -164,7 +164,7 @@ pub async fn upsert_node_action_capability(
 pub async fn list_node_action_capability_map(
     valence: &Valence,
 ) -> Result<HashMap<String, HashMap<String, bool>>> {
-    let rows = PionControlPlaneNodeActionCapability::query(valence)
+    let rows = PionControlPlaneNodeActionCapability::query_used(valence, valence::use_!("query PionControlPlaneNodeActionCapability in src/control_plane/capabilities.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .context("query node action capability rows")?;
     let mut map: HashMap<String, HashMap<String, bool>> = HashMap::new();

@@ -169,7 +169,7 @@ pub async fn upsert_pending_handoff_directive(
         epoch(),
     )?;
 
-    PionAgentHandoffDirective::upsert(directive_id, row, valence).await?;
+    PionAgentHandoffDirective::upsert_used(directive_id, row, valence, valence::use_!("upsert PionAgentHandoffDirective in src/control_plane/agent_handoff_directive.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     Ok(())
 }
 
@@ -189,7 +189,7 @@ pub async fn acknowledge_handoff_directives_for_heartbeat(
         return Ok(());
     };
 
-    let rows = PionAgentHandoffDirective::query(valence).await?;
+    let rows = PionAgentHandoffDirective::query_used(valence, valence::use_!("query PionAgentHandoffDirective in src/control_plane/agent_handoff_directive.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     let now = Utc::now();
     for row in rows {
         if row.target_node_id().trim() != report.node_id.trim() {
@@ -205,7 +205,7 @@ pub async fn acknowledge_handoff_directives_for_heartbeat(
             continue;
         };
         let id = valence::extract_id_from_record(rid).map_err(|e| anyhow::anyhow!("{e}"))?;
-        PionAgentHandoffDirectiveMutable::get(id.as_str(), valence)
+        PionAgentHandoffDirectiveMutable::get_used(id.as_str(), valence, valence::use_!("get PionAgentHandoffDirectiveMutable in src/control_plane/agent_handoff_directive.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await?
             .set_status(PionAgentHandoffDirectiveStatus::Acknowledged)?
             .set_acknowledged_at(now)?
@@ -239,7 +239,7 @@ async fn transition_pending_to_delivered(
     directive_table_id: &str,
     now: DateTime<Utc>,
 ) -> valence::Result<()> {
-    PionAgentHandoffDirectiveMutable::get(directive_table_id, valence)
+    PionAgentHandoffDirectiveMutable::get_used(directive_table_id, valence, valence::use_!("get PionAgentHandoffDirectiveMutable in src/control_plane/agent_handoff_directive.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await?
         .set_status(PionAgentHandoffDirectiveStatus::Delivered)?
         .set_delivered_at(now)?
@@ -259,7 +259,7 @@ pub async fn collect_handoff_directives_for_heartbeat(
     valence: &Valence,
 ) -> Result<Vec<AgentDirective>> {
     let now = Utc::now();
-    let mut rows: Vec<PionAgentHandoffDirective> = PionAgentHandoffDirective::query(valence)
+    let mut rows: Vec<PionAgentHandoffDirective> = PionAgentHandoffDirective::query_used(valence, valence::use_!("query PionAgentHandoffDirective in src/control_plane/agent_handoff_directive.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await?
         .into_iter()
         .filter(|r| r.target_node_id().trim() == report.node_id.trim())
@@ -290,7 +290,7 @@ pub async fn collect_handoff_directives_for_heartbeat(
                 HandoffDirectiveContext::from_node(&report.node_id)
                     .warn_deliver_failed(&id, &e.to_string());
             }
-            PionAgentHandoffDirective::get(id.as_str(), valence)
+            PionAgentHandoffDirective::get_used(id.as_str(), valence, valence::use_!("get PionAgentHandoffDirective in src/control_plane/agent_handoff_directive.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                 .await
                 .map_err(|e| anyhow::anyhow!(e))?
                 .unwrap_or(row)

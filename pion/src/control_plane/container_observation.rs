@@ -86,7 +86,7 @@ pub async fn upsert_observations(
     for c in &report.containers.containers {
         let row_id = observation_row_id(&report.node_id, &c.container_id);
         let next_state = map_state(c.state);
-        let existing = PionContainerObservation::get(&row_id, valence).await?;
+        let existing = PionContainerObservation::get_used(&row_id, valence, valence::use_!("get PionContainerObservation in src/control_plane/container_observation.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
         let prev_state = existing.as_ref().map(|row| row.state().clone());
         let first_observed_at = if prev_state.as_ref() == Some(&next_state) {
             existing
@@ -129,7 +129,7 @@ pub async fn upsert_observations(
             ingested_at,
             c.probe_error.clone(),
         )?;
-        PionContainerObservation::upsert(&row_id, row, valence).await?;
+        PionContainerObservation::upsert_used(&row_id, row, valence, valence::use_!("upsert PionContainerObservation in src/control_plane/container_observation.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     }
 
     prune_stale(&report.node_id, heartbeat_stale_cutoff(), valence).await?;
@@ -142,14 +142,14 @@ pub async fn prune_stale(
     stale_before: chrono::DateTime<Utc>,
     valence: &Valence,
 ) -> Result<()> {
-    let stale = PionContainerObservation::query(valence)
+    let stale = PionContainerObservation::query_used(valence, valence::use_!("query PionContainerObservation in src/control_plane/container_observation.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .where_node_id(StringPredicate::Equals(node_id.to_string()))
         .where_last_observed_at(DateTimePredicate::Before(stale_before))
         .await?;
     for row in stale {
         if let Some(id) = row.id() {
             let key = id.id().to_string();
-            let _ = PionContainerObservation::delete(&key, valence).await;
+            let _ = PionContainerObservation::delete_used(&key, valence, valence::use_!("delete PionContainerObservation in src/control_plane/container_observation.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await;
         }
     }
     Ok(())

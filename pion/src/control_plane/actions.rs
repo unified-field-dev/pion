@@ -74,7 +74,7 @@ async fn persist_action_event(
         observed_at,
         observed_at,
     )?;
-    PionControlPlaneActionEvent::upsert(&event_id, record, valence).await?;
+    PionControlPlaneActionEvent::upsert_used(&event_id, record, valence, valence::use_!("upsert PionControlPlaneActionEvent in src/control_plane/actions.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     Ok(RuntimeContainerActionResult {
         event_id,
         node_id: node_id.to_string(),

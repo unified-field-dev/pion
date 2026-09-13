@@ -35,7 +35,7 @@ async fn load_pending_enrollment_row(
     valence: &Valence,
     enrollment_id: &str,
 ) -> Result<PionAgentHostEnrollment, EnrollmentError> {
-    let row = PionAgentHostEnrollment::get(enrollment_id, valence)
+    let row = PionAgentHostEnrollment::get_used(enrollment_id, valence, valence::use_!("get PionAgentHostEnrollment in control_plane/agent_enrollment/verify.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} for verify"))
         .map_err(EnrollmentError::Internal)?
@@ -193,7 +193,7 @@ pub async fn mark_enrollment_claimed(
         Err(EnrollmentError::NotPending) => return Ok(()),
         Err(e) => return Err(e),
     };
-    let row = PionAgentHostEnrollment::get(&enrollment_id, valence)
+    let row = PionAgentHostEnrollment::get_used(&enrollment_id, valence, valence::use_!("get PionAgentHostEnrollment in control_plane/agent_enrollment/verify.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to mark claimed"))?
         .ok_or(EnrollmentError::UnknownId)?;
@@ -202,7 +202,7 @@ pub async fn mark_enrollment_claimed(
     }
     let session_id_for_photon = row.setup_wizard_session_id().clone();
     let now = Utc::now();
-    let m = PionAgentHostEnrollmentMutable::get(&enrollment_id, valence)
+    let m = PionAgentHostEnrollmentMutable::get_used(&enrollment_id, valence, valence::use_!("get PionAgentHostEnrollmentMutable in control_plane/agent_enrollment/verify.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load mutable enrollment {enrollment_id} to mark claimed"))?;
     m.set_status(PionAgentHostEnrollmentStatus::Claimed)?

@@ -89,10 +89,10 @@ async fn seed_pool_columns(
         now,
         now,
     )?;
-    PionControlPlaneVirtualPool::upsert(POOL, pool, valence).await?;
+    PionControlPlaneVirtualPool::upsert_used(POOL, pool, valence, valence::use_!("upsert PionControlPlaneVirtualPool in control_plane/pool_placement/tests.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     let map =
         PionControlPlanePoolCellMap::new(POOL.to_string(), CELL.to_string(), 1, true, now, now)?;
-    PionControlPlanePoolCellMap::upsert(&format!("{POOL}:{CELL}"), map, valence).await?;
+    PionControlPlanePoolCellMap::upsert_used(&format!("{POOL}:{CELL}"), map, valence, valence::use_!("upsert PionControlPlanePoolCellMap in control_plane/pool_placement/tests.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     Ok(())
 }
 
@@ -130,7 +130,7 @@ async fn seed_node_with_status(
         now,
         now,
     )?;
-    PionControlPlaneNode::upsert(spec.node_id, node, valence).await?;
+    PionControlPlaneNode::upsert_used(spec.node_id, node, valence, valence::use_!("upsert PionControlPlaneNode in control_plane/pool_placement/tests.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     Ok(())
 }
 
@@ -321,7 +321,7 @@ async fn missing_pool_and_unmapped_cells_are_distinguished() -> anyhow::Result<(
         now,
         now,
     )?;
-    PionControlPlaneVirtualPool::upsert(POOL, pool, &v).await?;
+    PionControlPlaneVirtualPool::upsert_used(POOL, pool, &v, valence::use_!("upsert PionControlPlaneVirtualPool in control_plane/pool_placement/tests.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
     let err = resolve_eligible_pool_nodes(POOL, &NodeHardwareRequirements::default(), &v)
         .await
         .expect_err("pool with no cell mappings");

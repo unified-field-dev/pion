@@ -34,7 +34,7 @@ pub(crate) async fn is_node_recently_heartbeating(
     node_id: &str,
     within_secs: i64,
 ) -> bool {
-    let Ok(Some(node)) = PionControlPlaneNode::get(node_id, valence).await else {
+    let Ok(Some(node)) = PionControlPlaneNode::get_used(node_id, valence, valence::use_!("get PionControlPlaneNode in control_plane/node_actions/shared.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await else {
         return false;
     };
     let cutoff = Utc::now() - Duration::seconds(within_secs);
@@ -48,7 +48,7 @@ pub(super) async fn get_node_action_treating_deletion_as_missing(
     valence: &Valence,
 ) -> anyhow::Result<Option<PionNodeActionCommand>> {
     use anyhow::Context;
-    match PionNodeActionCommand::get(command_id, valence).await {
+    match PionNodeActionCommand::get_used(command_id, valence, valence::use_!("get PionNodeActionCommand in control_plane/node_actions/shared.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await {
         Ok(m) => Ok(m),
         Err(ValenceError::PendingDeletion(_)) => Ok(None),
         Err(e) => Err(anyhow::Error::from(e))

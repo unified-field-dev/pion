@@ -108,7 +108,7 @@ async fn ensure_node_enqueueable(
     action_kind: &str,
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
-    let node = PionControlPlaneNode::get(node_id, valence)
+    let node = PionControlPlaneNode::get_used(node_id, valence, valence::use_!("get PionControlPlaneNode in control_plane/node_actions/enqueue.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load node {node_id} for enqueue"))
         .map_err(NodeActionError::Internal)?
@@ -245,7 +245,7 @@ pub async fn enqueue_node_action_idempotent(
         now,
     )
     .context("build node action command row for enqueue")?;
-    PionNodeActionCommand::upsert(&cmd_id, row, valence)
+    PionNodeActionCommand::upsert_used(&cmd_id, row, valence, valence::use_!("upsert PionNodeActionCommand in control_plane/node_actions/enqueue.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("upsert node action command {cmd_id}"))?;
     tracing::info!(

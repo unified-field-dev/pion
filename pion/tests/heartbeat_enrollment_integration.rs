@@ -55,7 +55,7 @@ async fn ingest_heartbeat_creates_observed_status_snapshot() -> anyhow::Result<(
 
     ingest_agent_heartbeat(&report, Some("127.0.0.1"), &v).await?;
 
-    let observed = PionControlPlaneObservedStatus::query(&v).await?;
+    let observed = PionControlPlaneObservedStatus::query_used(&v, valence::use_!("query PionControlPlaneObservedStatus in pion/tests/heartbeat_enrollment_integration.rs; Valence persistence for this feature path; typed store; visible to test harness.")).await?;
     assert_eq!(observed.len(), 1, "expected one observed status snapshot");
     assert_eq!(observed[0].source().as_str(), "agent");
     Ok(())

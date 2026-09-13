@@ -48,7 +48,7 @@ async fn finish_failed_node_action_report(
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
     if *cmd.attempt() < *cmd.max_attempts() {
-        PionNodeActionCommandMutable::get(command_id, valence)
+        PionNodeActionCommandMutable::get_used(command_id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/report.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("load command {command_id} to requeue after failure"))?
             .set_status(PionNodeActionCommandStatus::Pending)?
@@ -66,7 +66,7 @@ async fn finish_failed_node_action_report(
         }
         crate::maybe_publish_setup_wizard_tracked_photon(correlation_key, "retry_pending").await;
     } else {
-        PionNodeActionCommandMutable::get(command_id, valence)
+        PionNodeActionCommandMutable::get_used(command_id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/report.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("load command {command_id} to mark terminal failure"))?
             .set_status(PionNodeActionCommandStatus::Failed)?
@@ -145,7 +145,7 @@ async fn report_node_action_result_inner(
     body: ReportNodeActionResult,
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
-    let cmd = PionNodeActionCommand::get(&body.command_id, valence)
+    let cmd = PionNodeActionCommand::get_used(&body.command_id, valence, valence::use_!("get PionNodeActionCommand in control_plane/node_actions/report.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("load command {} for report", body.command_id))?
         .ok_or_else(|| NodeActionError::CommandNotFound {
@@ -201,12 +201,12 @@ async fn report_node_action_result_inner(
         now,
     )
     .context("build node action result row")?;
-    PionNodeActionResult::upsert(&result_id, res, valence)
+    PionNodeActionResult::upsert_used(&result_id, res, valence, valence::use_!("upsert PionNodeActionResult in control_plane/node_actions/report.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .with_context(|| format!("upsert node action result {result_id}"))?;
 
     if body.success {
-        PionNodeActionCommandMutable::get(&body.command_id, valence)
+        PionNodeActionCommandMutable::get_used(&body.command_id, valence, valence::use_!("get PionNodeActionCommandMutable in control_plane/node_actions/report.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .with_context(|| format!("load command {} to mark success", body.command_id))?
             .set_status(PionNodeActionCommandStatus::Succeeded)?

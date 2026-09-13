@@ -99,7 +99,7 @@ pub async fn resolve_node_for_deploy_target_with_requirements(
 ) -> Result<String> {
     match target {
         DeployTarget::Node(node_id) => {
-            let node = PionControlPlaneNode::get(node_id, valence)
+            let node = PionControlPlaneNode::get_used(node_id, valence, valence::use_!("get PionControlPlaneNode in src/control_plane/deploy.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                 .await
                 .with_context(|| format!("load node {node_id} for deploy target resolution"))?
                 .ok_or_else(|| anyhow::anyhow!("node '{node_id}' not found"))?;
