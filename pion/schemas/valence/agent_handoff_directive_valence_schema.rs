@@ -3,6 +3,7 @@ use valence::privacy_policies::common::SYSTEM_ONLY;
 
 valence_schema! {
     PionAgentHandoffDirective {
+        repository: "https://github.com/unified-field-dev/pion",
         table: "pion_agent_handoff_directive",
         version: "0.1.1",
         database: crate::storage::CONTROL_PLANE_DEFAULT_STORAGE,

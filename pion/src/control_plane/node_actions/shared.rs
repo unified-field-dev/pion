@@ -34,7 +34,7 @@ pub(crate) async fn is_node_recently_heartbeating(
     node_id: &str,
     within_secs: i64,
 ) -> bool {
-    let Ok(Some(node)) = PionControlPlaneNode::get_used(node_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Control Plane Node** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#)).await else {
+    let Ok(Some(node)) = PionControlPlaneNode::get_used(node_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Control Plane Node** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it.")).await else {
         return false;
     };
     let cutoff = Utc::now() - Duration::seconds(within_secs);
@@ -48,7 +48,7 @@ pub(super) async fn get_node_action_treating_deletion_as_missing(
     valence: &Valence,
 ) -> anyhow::Result<Option<PionNodeActionCommand>> {
     use anyhow::Context;
-    match PionNodeActionCommand::get_used(command_id, valence, valence::use_!(r#"In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."#)).await {
+    match PionNodeActionCommand::get_used(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it.")).await {
         Ok(m) => Ok(m),
         Err(ValenceError::PendingDeletion(_)) => Ok(None),
         Err(e) => Err(anyhow::Error::from(e))

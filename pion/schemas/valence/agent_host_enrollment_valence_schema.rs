@@ -3,6 +3,7 @@ use valence::privacy_policies::common::{AUTHENTICATED, SYSTEM_ONLY};
 
 valence_schema! {
     PionAgentHostEnrollment {
+        repository: "https://github.com/unified-field-dev/pion",
         table: "pion_agent_host_enrollment",
         version: "0.1.1",
         database: crate::storage::GLUON_DEFAULT_STORAGE,

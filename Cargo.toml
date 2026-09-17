@@ -19,8 +19,8 @@ homepage = "https://github.com/unified-field-dev/pion"
 
 [workspace.dependencies]
 # Unified Field cores — git branch=main from unified-field-dev (standalone checkout; no monorepo path deps)
-valence = { package = "uf-valence", git = "https://github.com/deathbreakfast/valence", branch = "feat/data-use-transparency", default-features = false, features = ["sqlite", "hybrid", "postgres"] }
-valence-codegen = { package = "uf-valence-codegen", git = "https://github.com/deathbreakfast/valence", branch = "feat/data-use-transparency" }
+valence = { package = "uf-valence", git = "https://github.com/unified-field-dev/valence", branch = "main", default-features = false, features = ["sqlite", "hybrid", "postgres"] }
+valence-codegen = { package = "uf-valence-codegen", git = "https://github.com/unified-field-dev/valence", branch = "main" }
 spectra-core = { package = "uf-spectra-core", git = "https://github.com/unified-field-dev/Spectra", branch = "main" }
 spectra-macros = { git = "https://github.com/unified-field-dev/Spectra", branch = "main" }
 spectra = { package = "uf-spectra", git = "https://github.com/unified-field-dev/Spectra", branch = "main", default-features = false }

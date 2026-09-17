@@ -3,6 +3,7 @@ use valence::privacy_policies::common::{AUTHENTICATED, SYSTEM_ONLY};
 
 valence_schema! {
     PionControlPlaneHandoffMigration {
+        repository: "https://github.com/unified-field-dev/pion",
         table: "pion_control_plane_handoff_migration",
         version: "0.1.0",
         database: crate::storage::CONTROL_PLANE_DEFAULT_STORAGE,

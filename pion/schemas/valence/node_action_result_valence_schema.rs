@@ -3,6 +3,7 @@ use valence::privacy_policies::common::SYSTEM_ONLY;
 
 valence_schema! {
     PionNodeActionResult {
+        repository: "https://github.com/unified-field-dev/pion",
         table: "pion_node_action_result",
         version: "0.1.0",
         database: crate::storage::GLUON_DEFAULT_STORAGE,

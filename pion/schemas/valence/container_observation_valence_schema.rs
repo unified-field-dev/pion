@@ -3,6 +3,7 @@ use valence::privacy_policies::common::{AUTHENTICATED, SYSTEM_ONLY};
 
 valence_schema! {
     PionContainerObservation {
+        repository: "https://github.com/unified-field-dev/pion",
         table: "pion_container_observation",
         version: "0.1.0",
         database: crate::storage::CONTROL_PLANE_DEFAULT_STORAGE,

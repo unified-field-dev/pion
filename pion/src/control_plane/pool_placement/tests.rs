@@ -89,10 +89,10 @@ async fn seed_pool_columns(
         now,
         now,
     )?;
-    PionControlPlaneVirtualPool::upsert_used(POOL, pool, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Virtual Pool** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#)).await?;
+    PionControlPlaneVirtualPool::upsert_used(POOL, pool, valence, valence::use_!("When **Pion control plane** needs to persist work, we **save Pion Control Plane Virtual Pool** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields.")).await?;
     let map =
         PionControlPlanePoolCellMap::new(POOL.to_string(), CELL.to_string(), 1, true, now, now)?;
-    PionControlPlanePoolCellMap::upsert_used(&format!("{POOL}:{CELL}"), map, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Pool Cell Map** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#)).await?;
+    PionControlPlanePoolCellMap::upsert_used(&format!("{POOL}:{CELL}"), map, valence, valence::use_!("When **Pion control plane** needs to persist work, we **save Pion Control Plane Pool Cell Map** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields.")).await?;
     Ok(())
 }
 
@@ -130,7 +130,7 @@ async fn seed_node_with_status(
         now,
         now,
     )?;
-    PionControlPlaneNode::upsert_used(spec.node_id, node, valence, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Node** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#)).await?;
+    PionControlPlaneNode::upsert_used(spec.node_id, node, valence, valence::use_!("When **Pion control plane** needs to persist work, we **save Pion Control Plane Node** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields.")).await?;
     Ok(())
 }
 
@@ -321,7 +321,7 @@ async fn missing_pool_and_unmapped_cells_are_distinguished() -> anyhow::Result<(
         now,
         now,
     )?;
-    PionControlPlaneVirtualPool::upsert_used(POOL, pool, &v, valence::use_!(r#"When **Pion control plane** needs to persist work, we **save Pion Control Plane Virtual Pool** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."#)).await?;
+    PionControlPlaneVirtualPool::upsert_used(POOL, pool, &v, valence::use_!("When **Pion control plane** needs to persist work, we **save Pion Control Plane Virtual Pool** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields.")).await?;
     let err = resolve_eligible_pool_nodes(POOL, &NodeHardwareRequirements::default(), &v)
         .await
         .expect_err("pool with no cell mappings");

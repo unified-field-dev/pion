@@ -88,7 +88,7 @@ async fn enqueue_same_key_is_noop() -> anyhow::Result<()> {
     )
     .await?;
     assert_eq!(id1, id2);
-    let rows = PionNodeActionCommand::query_used(&v, valence::use_!(r#"**Test:** Fixture **Pion Node Action Command** list for `tests` so the suite can arrange and assert persistence behavior. CI and developers running the suite only."#)).await?;
+    let rows = PionNodeActionCommand::query_used(&v, valence::use_!("**Test:** Fixture **Pion Node Action Command** list for `tests` so the suite can arrange and assert persistence behavior. CI and developers running the suite only.")).await?;
     assert_eq!(rows.len(), 1);
     Ok(())
 }
