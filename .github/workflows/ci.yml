@@ -89,6 +89,15 @@ jobs:
         with:
           command: check
 
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Security audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit
+
   # Coverage floor (≥50% lines). Ratchet toward 90%; fail PRs that regress.
   coverage:
     runs-on: ubuntu-latest
