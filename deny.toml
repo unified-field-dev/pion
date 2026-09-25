@@ -44,6 +44,7 @@ allow-git = [
     "https://github.com/unified-field-dev/photon",
     "https://github.com/unified-field-dev/Spectra",
     "https://github.com/unified-field-dev/parton",
+    "https://github.com/unified-field-dev/quark",
     "https://github.com/unified-field-dev/chronon",
     "https://github.com/unified-field-dev/chronon-coordinator",
     "https://github.com/unified-field-dev/chronon-coordinator-macros",
