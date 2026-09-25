@@ -191,5 +191,30 @@ impl Drop for BootstrapSession {
 }
 
 fn apply_telemetry(telemetry: TelemetryAdapter) {
-    let _ = telemetry;
+    match telemetry {
+        TelemetryAdapter::Off => {}
+        TelemetryAdapter::Console => {
+            use std::sync::Arc;
+
+            use spectra_core::{set_sink, SpectraSink};
+
+            struct TracingConsoleSink;
+
+            impl SpectraSink for TracingConsoleSink {
+                fn record_counter(&self, name: &str, labels: &[(&str, &str)], delta: i64) {
+                    tracing::info!(target: "pion.testkit.telemetry", %name, ?labels, delta, "counter");
+                }
+
+                fn record_gauge(&self, name: &str, labels: &[(&str, &str)], value: f64) {
+                    tracing::info!(target: "pion.testkit.telemetry", %name, ?labels, value, "gauge");
+                }
+
+                fn log_event(&self, table: &str, fields: &serde_json::Value) {
+                    tracing::info!(target: "pion.testkit.telemetry", %table, %fields, "event");
+                }
+            }
+
+            set_sink(Arc::new(TracingConsoleSink) as Arc<dyn SpectraSink>);
+        }
+    }
 }

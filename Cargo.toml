@@ -26,6 +26,11 @@ spectra-macros = { git = "https://github.com/unified-field-dev/Spectra", branch 
 spectra = { package = "uf-spectra", git = "https://github.com/unified-field-dev/Spectra", branch = "main", default-features = false }
 photon = { package = "uf-photon", git = "https://github.com/unified-field-dev/photon", branch = "main", default-features = false, features = ["runtime"] }
 parton = { package = "parton", git = "https://github.com/unified-field-dev/parton", branch = "main" }
+chronon-core = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
+chronon-coordinator = { git = "https://github.com/unified-field-dev/chronon-coordinator", branch = "main" }
+chronon-coordinator-macros = { git = "https://github.com/unified-field-dev/chronon-coordinator-macros", branch = "main" }
+chronon-valence-identity = { git = "https://github.com/unified-field-dev/chronon-valence-identity", branch = "main" }
+chronon-executor = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
 
 # --- Third-party ---
 anyhow = "1"

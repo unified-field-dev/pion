@@ -1,28 +1,17 @@
 //! Candidate [Chronon](https://docs.rs/uf-chronon) (`uf-chronon`, cron + run-once job scheduler)
 //! job specs for `pion`'s periodic maintenance sweeps.
 //!
-//! # External blocker
+//! # Wiring status
 //!
-//! `chronon` is **not** a workspace dependency of this crate (see `Cargo.toml`
-//! `[workspace.dependencies]` — cores such as `valence`, `spectra`, and `photon` are pinned
-//! via crates.io / git). Wiring Chronon in means adding a published or git-pinned
-//! `uf-chronon` (and related crates) to `[workspace.dependencies]`, which is out of scope here.
+//! With Cargo feature **`chronon`**, [`EXPIRED_LEASE_SWEEP`] is realized as script
+//! `pion_node_actions_expired_lease_sweep` (job name `pion.node_actions.expired_lease_sweep`,
+//! cron `*/2 * * * *`). Composite hosts call `pion::scripts::register_default_jobs` at boot so
+//! Chronon upserts the job.
 //!
-//! Until then, `pion`'s periodic maintenance today runs **inline**, opportunistically, on the hot
-//! ingest/claim path rather than on a schedule — e.g. `control_plane::node_actions`'s private
-//! `reconcile_expired_lease_node_action` helper only reconciles a node action's expired lease when
-//! that specific row is next touched by a claim. There is no background sweep that guarantees
-//! timely cleanup of rows nobody happens to touch again (an abandoned enrollment ticket, a node
-//! that stops heartbeating mid-lease, etc).
-//!
-//! This module documents the maintenance jobs that *should* run on a Chronon cron schedule once
-//! the dependency lands, as plain, `chronon`-independent data ([`ChrononJobSpec`]) so:
-//!
-//! - the intent and target cron cadence are captured and reviewable now, without inventing a fake
-//!   Chronon integration against a crate that isn't linked;
-//! - wiring the real dependency later is a matter of mapping each [`ChrononJobSpec`] onto
-//!   `chronon_core::Job` (`schedule_kind = Cron`, `cron_expr`, `timezone`) and registering an
-//!   executor, not re-deriving what jobs are needed.
+//! The other specs below remain inventory-only until their scripts land the same way.
+//! Until then (and as a safety net even with Chronon), Gluon `process_bootstraps` and any
+//! host that calls [`crate::reconcile_node_action_commands`] still reconcile expired leases
+//! opportunistically when that path runs.
 //!
 //! ```
 //! use pion::chronon_hooks::ALL_JOBS;
@@ -46,10 +35,11 @@ pub struct ChrononJobSpec {
 }
 
 /// Sweep node actions whose `lease_expires_at` has passed without a report, forcing them back to
-/// retryable/failed state. Today this only happens when a claim attempt happens to touch the same
-/// row again (`reconcile_expired_lease_node_action`, called from the claim path in
-/// `control_plane::node_actions`); a node that goes permanently offline mid-lease otherwise leaves
-/// its action stuck `running` forever.
+/// retryable/failed state (also reconciles stale pending).
+///
+/// **Wired** under feature `chronon` as script `pion_node_actions_expired_lease_sweep` /
+/// job `pion.node_actions.expired_lease_sweep`. Body:
+/// [`crate::reconcile_node_action_commands`].
 pub const EXPIRED_LEASE_SWEEP: ChrononJobSpec = ChrononJobSpec {
     name: "pion.node_actions.expired_lease_sweep",
     cron_expr: "*/2 * * * *",
@@ -94,8 +84,8 @@ mod tests {
     #[test]
     fn all_jobs_have_non_empty_fields_and_plausible_cron() {
         for job in ALL_JOBS {
-            assert!(!job.name.is_empty());
-            assert!(!job.description.is_empty());
+            assert_ne!(job.name, "");
+            assert_ne!(job.description, "");
             assert!(
                 is_plausible_five_field_cron(job.cron_expr),
                 "job {} has non-5-field cron expr: {}",
@@ -113,5 +103,14 @@ mod tests {
         names.dedup();
         assert_eq!(names.len(), before, "duplicate chronon job name");
         assert!(ALL_JOBS.iter().all(|j| j.name.starts_with("pion.")));
+    }
+
+    #[test]
+    fn expired_lease_sweep_matches_wired_default_job() {
+        assert_eq!(
+            EXPIRED_LEASE_SWEEP.name,
+            "pion.node_actions.expired_lease_sweep"
+        );
+        assert_eq!(EXPIRED_LEASE_SWEEP.cron_expr, "*/2 * * * *");
     }
 }

@@ -14,9 +14,10 @@ Prefer `pion-server` for the slim headless ingest binary in this workspace.
 
 ## `pion` binary
 
-The `pion` binary (`cargo run -p pion --features runtime`) is a minimal standalone entry for
-split deployments. Storage is SQLite (embedded) or Postgres with an in-memory cache (`db-hybrid`).
-Prefer `pion-server` for the supported headless ingest process.
+The `pion` binary (`cargo run -p pion --features runtime`) is an **intentional stub**: it prints a
+one-shot message and exits with status 1 until a thin split-control-plane process wrapper is
+wired. Prefer `pion-server` for the supported headless ingest process, or embed the `pion`
+library from a composite Leptos `server` binary.
 
 ## Documentation
 
@@ -31,6 +32,9 @@ Prefer `pion-server` for the supported headless ingest process.
 - **Unit + integration:** `cargo test -p pion --features runtime`
 - **Spectra instrumentation:** `pion/tests/instrumentation_operations.rs` (metrics/events emit via `RecordingSink`).
 - **Migration script:** `pion/tests/migrate_gluon_control_plane_tables_integration.rs` (Chronon no-op entrypoint for retired Surreal copy).
+- **Chronon expired-lease sweep (feature `chronon`):** script
+  `pion_node_actions_expired_lease_sweep` / job `pion.node_actions.expired_lease_sweep`; hosts call
+  `pion::scripts::register_default_jobs` at boot.
 - **Heartbeat ingest:** `pion/tests/heartbeat_enrollment_integration.rs` (enrollment token → observed status).
 
 ## Spectra logging

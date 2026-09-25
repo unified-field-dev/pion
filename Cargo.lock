@@ -386,6 +386,112 @@ dependencies = [
 ]
 
 [[package]]
+name = "chrono-tz"
+version = "0.10.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6139a8597ed92cf816dfb33f5dd6cf0bb93a6adc938f11039f371bc5bcd26c3"
+dependencies = [
+ "chrono",
+ "phf",
+]
+
+[[package]]
+name = "chronon-coordinator"
+version = "0.1.0"
+source = "git+https://github.com/unified-field-dev/chronon-coordinator?branch=main#43ee393f33270ee6d07bd610a85aa5804621c921"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "chronon-core",
+ "chronon-executor",
+ "chronon-scheduler",
+ "log",
+ "serde",
+ "serde_json",
+ "uf-quark 0.1.3 (git+https://github.com/unified-field-dev/quark?branch=main)",
+ "uf-valence",
+]
+
+[[package]]
+name = "chronon-coordinator-macros"
+version = "0.1.0"
+source = "git+https://github.com/unified-field-dev/chronon-coordinator-macros?branch=main#e5a525806ccec70c95e150a22cc94aa71c23f831"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde_json",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "chronon-core"
+version = "0.1.4"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#a9a144d3d485a174d298944a7cb1e3cbb8c06028"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "uuid",
+]
+
+[[package]]
+name = "chronon-executor"
+version = "0.1.4"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#a9a144d3d485a174d298944a7cb1e3cbb8c06028"
+dependencies = [
+ "chrono",
+ "chronon-core",
+ "chronon-telemetry",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "uf-quark 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "chronon-scheduler"
+version = "0.1.4"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#a9a144d3d485a174d298944a7cb1e3cbb8c06028"
+dependencies = [
+ "chrono",
+ "chrono-tz",
+ "chronon-core",
+ "chronon-telemetry",
+ "croner",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "uuid",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "chronon-telemetry"
+version = "0.1.4"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#a9a144d3d485a174d298944a7cb1e3cbb8c06028"
+dependencies = [
+ "parking_lot",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "chronon-valence-identity"
+version = "0.1.0"
+source = "git+https://github.com/unified-field-dev/chronon-valence-identity?branch=main#3559594397b4d5197a592ae190a69952f52d61c7"
+dependencies = [
+ "chronon-core",
+ "serde_json",
+ "uf-valence",
+]
+
+[[package]]
 name = "ciborium"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -554,6 +660,15 @@ checksum = "6b50826342786a51a89e2da3a28f1c32b06e387201bc2d19791f622c673706b1"
 dependencies = [
  "cast",
  "itertools",
+]
+
+[[package]]
+name = "croner"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c344b0690c1ad1c7176fe18eb173e0c927008fdaaa256e40dfd43ddd149c0843"
+dependencies = [
+ "chrono",
 ]
 
 [[package]]
@@ -1878,6 +1993,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 
 [[package]]
+name = "phf"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "913273894cec178f401a31ec4b656318d95473527be05c0752cc41cdc32be8b7"
+dependencies = [
+ "phf_shared",
+]
+
+[[package]]
+name = "phf_shared"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06005508882fb681fd97892ecff4b7fd0fee13ef1aa569f8695dae7ab9099981"
+dependencies = [
+ "siphasher",
+]
+
+[[package]]
 name = "photon-backend"
 version = "0.1.4"
 source = "git+https://github.com/unified-field-dev/photon?branch=main#46dd3ea4c9d5e2b8c5fb55027fe7642a803e9403"
@@ -1898,7 +2031,7 @@ dependencies = [
  "tokio",
  "tracing",
  "uf-photon-core",
- "uf-quark",
+ "uf-quark 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid",
  "zeroize",
 ]
@@ -1953,6 +2086,11 @@ dependencies = [
  "base64",
  "blake3",
  "chrono",
+ "chronon-coordinator",
+ "chronon-coordinator-macros",
+ "chronon-core",
+ "chronon-executor",
+ "chronon-valence-identity",
  "criterion",
  "futures",
  "jsonwebtoken",
@@ -2041,6 +2179,8 @@ dependencies = [
  "serde_json",
  "serial_test",
  "tokio",
+ "tracing",
+ "uf-spectra-core",
  "uf-valence",
 ]
 
@@ -2826,6 +2966,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "siphasher"
+version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33f4fe9184a62d842c9ef383018f3306d8ba224fd9d836f56d7288308847c256"
+
+[[package]]
 name = "sketches-ddsketch"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3501,7 +3647,7 @@ dependencies = [
  "photon-runtime",
  "photon-telemetry",
  "uf-photon-core",
- "uf-quark",
+ "uf-quark 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3519,6 +3665,14 @@ name = "uf-quark"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f500ee85e77944565c22d324250caa362257b68274733b2998226a8f563edb0"
+dependencies = [
+ "inventory",
+]
+
+[[package]]
+name = "uf-quark"
+version = "0.1.3"
+source = "git+https://github.com/unified-field-dev/quark?branch=main#8f4cd00aaff350c8e718afb80ea40582f7ee971e"
 dependencies = [
  "inventory",
 ]
@@ -3551,7 +3705,7 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
- "uf-quark",
+ "uf-quark 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3561,6 +3715,7 @@ source = "git+https://github.com/unified-field-dev/valence?branch=main#cf439f50c
 dependencies = [
  "uf-valence-backend-hybrid",
  "uf-valence-backend-indradb",
+ "uf-valence-backend-mem",
  "uf-valence-backend-postgres",
  "uf-valence-backend-sqlite",
  "uf-valence-core",
@@ -3591,6 +3746,17 @@ dependencies = [
  "tokio",
  "uf-valence-core",
  "uuid",
+]
+
+[[package]]
+name = "uf-valence-backend-mem"
+version = "0.1.5"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#cf439f50caed958e71873b6dd50a7519bdbc6151"
+dependencies = [
+ "async-trait",
+ "serde_json",
+ "tokio",
+ "uf-valence-core",
 ]
 
 [[package]]
@@ -4240,6 +4406,12 @@ name = "writeable"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ad82d2a33cdc9674dc7465672f271e096168fcdbe0f799d9e6db8c5892679dc"
+
+[[package]]
+name = "xxhash-rust"
+version = "0.8.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aee1b19627c7c60102ab80d3a9cbe18de90bfe03bfa6c3715447681f0e8c8af6"
 
 [[package]]
 name = "yoke"

@@ -42,6 +42,11 @@ futures = { workspace = true, optional = true }
 axum = { workspace = true, optional = true }
 blake3 = { workspace = true, optional = true }
 metrics = { workspace = true, optional = true }
+chronon-core = { workspace = true, optional = true }
+chronon-coordinator = { workspace = true, optional = true }
+chronon-coordinator-macros = { workspace = true, optional = true }
+chronon-valence-identity = { workspace = true, optional = true }
+chronon-executor = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -70,10 +75,24 @@ runtime = [
     "dep:blake3",
     "dep:metrics",
 ]
+# Chronon script inventory + default-job registration for expired lease sweeps.
+# Composite hosts enable this and call `scripts::register_default_jobs` at boot.
+chronon = [
+    "runtime",
+    "dep:chronon-core",
+    "dep:chronon-coordinator",
+    "dep:chronon-coordinator-macros",
+    "dep:chronon-valence-identity",
+    "dep:chronon-executor",
+]
 
 [[test]]
 name = "instrumentation_operations"
 required-features = ["runtime"]
+
+[[test]]
+name = "chronon_expired_lease_sweep"
+required-features = ["chronon"]
 
 [build-dependencies]
 valence-codegen = { workspace = true }

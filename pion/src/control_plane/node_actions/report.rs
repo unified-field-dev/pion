@@ -45,7 +45,7 @@ async fn finish_failed_node_action_report(
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
     if *cmd.attempt() < *cmd.max_attempts() {
-        cmd.get_mutable(valence, valence::use_!(r#"When an agent **reports failure** with attempts remaining, we **requeue the command as pending** with the error text so it can be claimed again. Agents and operators use that retry state."#))
+        cmd.get_mutable_used(valence, valence::use_!(r"When an agent **reports failure** with attempts remaining, we **requeue the command as pending** with the error text so it can be claimed again. Agents and operators use that retry state."))
             .set_status(PionNodeActionCommandStatus::Pending)?
             .set_last_error(clip(last, CLIP))?
             .set_lease_expires_at(lease_sentinel())?
@@ -61,7 +61,7 @@ async fn finish_failed_node_action_report(
         }
         crate::maybe_publish_setup_wizard_tracked_photon(correlation_key, "retry_pending").await;
     } else {
-        cmd.get_mutable(valence, valence::use_!(r#"When an agent **reports failure** at max attempts, we **mark the command failed** with the error text. Operators and wizard tracking see the terminal failure."#))
+        cmd.get_mutable_used(valence, valence::use_!(r"When an agent **reports failure** at max attempts, we **mark the command failed** with the error text. Operators and wizard tracking see the terminal failure."))
             .set_status(PionNodeActionCommandStatus::Failed)?
             .set_last_error(clip(last, CLIP))?
             .set_updated_at(now)?
@@ -138,7 +138,7 @@ async fn report_node_action_result_inner(
     body: ReportNodeActionResult,
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
-    let cmd = PionNodeActionCommand::get(&body.command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let cmd = PionNodeActionCommand::get_used(&body.command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .with_context(|| format!("load command {} for report", body.command_id))?
         .ok_or_else(|| NodeActionError::CommandNotFound {
@@ -194,12 +194,12 @@ async fn report_node_action_result_inner(
         now,
     )
     .context("build node action result row")?;
-    PionNodeActionResult::upsert(&result_id, res, valence, valence::use_!("When **Pion control plane** needs to persist work, we **save Pion Node Action Result** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."))
+    PionNodeActionResult::upsert_used(&result_id, res, valence, valence::use_!("When **Pion control plane** needs to persist work, we **save Pion Node Action Result** so the next step in that feature can continue with the latest values. People and services allowed for **Pion control plane** use this data for that workflow—not as a general export of unrelated personal fields."))
         .await
         .with_context(|| format!("upsert node action result {result_id}"))?;
 
     if body.success {
-        cmd.get_mutable(valence, valence::use_!(r#"When an agent **reports success** for a running node action, we **mark the command succeeded** so the queue and wizards advance. Operators and tracking UIs see the success."#))
+        cmd.get_mutable_used(valence, valence::use_!(r"When an agent **reports success** for a running node action, we **mark the command succeeded** so the queue and wizards advance. Operators and tracking UIs see the success."))
             .set_status(PionNodeActionCommandStatus::Succeeded)?
             .set_updated_at(now)?
             .commit()

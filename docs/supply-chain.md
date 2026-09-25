@@ -22,6 +22,10 @@ Workspace `[workspace.dependencies]` pins upstream cores and Parton as git
 | `uf-spectra` / `uf-spectra-core` / `spectra-macros` | Git `unified-field-dev/Spectra` `branch = "main"` |
 | `uf-photon` | Git `unified-field-dev/photon` `branch = "main"` |
 | `parton` | Git `unified-field-dev/parton` `branch = "main"` |
+| `chronon-core` / `chronon-executor` | Git `unified-field-dev/chronon` `branch = "main"` (optional `chronon` feature) |
+| `chronon-coordinator` | Git `unified-field-dev/chronon-coordinator` `branch = "main"` |
+| `chronon-coordinator-macros` | Git `unified-field-dev/chronon-coordinator-macros` `branch = "main"` |
+| `chronon-valence-identity` | Git `unified-field-dev/chronon-valence-identity` `branch = "main"` |
 
 Those Git remotes are listed in [`deny.toml`](../deny.toml) `[sources].allow-git`.
 

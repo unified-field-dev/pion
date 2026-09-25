@@ -242,7 +242,7 @@ pub async fn list_agent_nodes_for_cell(
     cell_id: &str,
 ) -> Result<Vec<(String, String)>> {
     let target = cell_id.trim();
-    let nodes = PionControlPlaneNode::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
+    let nodes = PionControlPlaneNode::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
     let mut out: Vec<(String, String)> = nodes
         .into_iter()
         .filter(|n| {
@@ -269,8 +269,8 @@ pub async fn list_agent_nodes_for_cell(
 pub async fn list_runtime_container_snapshots(
     valence: &Valence,
 ) -> Result<Vec<RuntimeContainerSnapshot>> {
-    let nodes = PionControlPlaneNode::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
-    let observed = PionControlPlaneObservedStatus::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Observed Status** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
+    let nodes = PionControlPlaneNode::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Node** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
+    let observed = PionControlPlaneObservedStatus::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Observed Status** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
     let now = Utc::now();
 
     let mut newest_by_node: HashMap<String, PionControlPlaneObservedStatus> = HashMap::new();
@@ -288,8 +288,7 @@ pub async fn list_runtime_container_snapshots(
     for node in nodes {
         let node_id = node
             .id()
-            .map(|t| valence::extract_id_from_record(t).unwrap_or_default())
-            .unwrap_or_default();
+            .map_or_default(|t| valence::extract_id_from_record(t).unwrap_or_default());
         let Some(snapshot) = newest_by_node.get(&node_id) else {
             continue;
         };
@@ -325,15 +324,14 @@ pub async fn list_runtime_container_snapshots(
 pub async fn list_runtime_health_snapshots(
     valence: &Valence,
 ) -> Result<Vec<RuntimeHealthSnapshot>> {
-    let observed = PionControlPlaneObservedStatus::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Observed Status** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
+    let observed = PionControlPlaneObservedStatus::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Control Plane Observed Status** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors.")).await?;
     let now = Utc::now();
     let mut rows = observed
         .into_iter()
         .map(|snapshot| RuntimeHealthSnapshot {
             snapshot_id: snapshot
                 .id()
-                .map(|t| valence::extract_id_from_record(t).unwrap_or_default())
-                .unwrap_or_default(),
+                .map_or_default(|t| valence::extract_id_from_record(t).unwrap_or_default()),
             node_id: snapshot.node_id().clone(),
             cell_id: snapshot.cell_id().clone(),
             source: snapshot.source().as_str().to_string(),
