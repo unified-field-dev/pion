@@ -27,7 +27,7 @@ async fn reconcile_stale_pending_node_action(
 ) -> Result<()> {
     if is_node_recently_heartbeating(valence, cmd.node_id(), 60).await {
         if cmd
-            .get_mutable_used(valence, valence::use_!(r"During **node action reconcile**, if a pending command's node is heartbeating again, we **extend the pending window** so an online agent still has time to claim it. Control-plane recovery uses the updated timestamps."))
+            .get_mutable(valence, valence::use_!(r"During **node action reconcile**, if a pending command's node is heartbeating again, we **extend the pending window** so an online agent still has time to claim it. Control-plane recovery uses the updated timestamps."))
             .set_created_at(now)?
             .set_updated_at(now)?
             .commit()
@@ -43,7 +43,7 @@ async fn reconcile_stale_pending_node_action(
         return Ok(());
     }
     if cmd
-        .get_mutable_used(valence, valence::use_!(r"During **node action reconcile**, when no agent claimed a pending command in time, we **mark it failed** so operators know it timed out. Wizard tracking and operators see the failure."))
+        .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when no agent claimed a pending command in time, we **mark it failed** so operators know it timed out. Wizard tracking and operators see the failure."))
         .set_status(PionNodeActionCommandStatus::Failed)?
         .set_last_error("No agent claimed this command within timeout".to_string())?
         .set_updated_at(now)?
@@ -66,7 +66,7 @@ async fn reconcile_expired_lease_node_action(
 ) -> Result<()> {
     if *cmd.attempt() >= *cmd.max_attempts() {
         if cmd
-            .get_mutable_used(valence, valence::use_!(r"During **node action reconcile**, when a running command's lease expires after max attempts, we **mark it failed**. Operators and wizard tracking see the terminal failure."))
+            .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when a running command's lease expires after max attempts, we **mark it failed**. Operators and wizard tracking see the terminal failure."))
             .set_status(PionNodeActionCommandStatus::Failed)?
             .set_last_error("lease expired after max attempts".to_string())?
             .set_updated_at(now)?
@@ -78,7 +78,7 @@ async fn reconcile_expired_lease_node_action(
             crate::maybe_publish_setup_wizard_tracked_photon(ck, "failed").await;
         }
     } else if cmd
-        .get_mutable_used(valence, valence::use_!(r"During **node action reconcile**, when a running command's lease expires with attempts left, we **return it to pending** so another agent can claim it. Control-plane retry and operators use that status."))
+        .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when a running command's lease expires with attempts left, we **return it to pending** so another agent can claim it. Control-plane retry and operators use that status."))
         .set_status(PionNodeActionCommandStatus::Pending)?
         .set_lease_expires_at(lease_sentinel())?
         .set_updated_at(now)?
@@ -98,7 +98,7 @@ async fn reconcile_expired_lease_node_action(
 ///
 /// Returns `Err` when the command is unknown or Valence update fails.
 pub async fn cancel_node_action(command_id: &str, valence: &Valence) -> Result<()> {
-    let cmd = PionNodeActionCommand::get_used(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let cmd = PionNodeActionCommand::get(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .with_context(|| format!("load command {command_id} for cancel"))?
         .ok_or_else(|| anyhow!("unknown command {command_id}"))?;
@@ -111,7 +111,7 @@ pub async fn cancel_node_action(command_id: &str, valence: &Valence) -> Result<(
 }
 
 async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence) -> Result<bool> {
-    let cmd = PionNodeActionCommand::get_used(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let cmd = PionNodeActionCommand::get(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .with_context(|| format!("load command {command_id} for cancel-if-non-terminal"))?
         .ok_or_else(|| anyhow!("unknown command {command_id}"))?;
@@ -124,7 +124,7 @@ async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence)
         return Ok(false);
     }
     let now = Utc::now();
-    cmd.get_mutable_used(valence, valence::use_!(r"When an operator or orchestrator **cancels** a non-terminal node action, we **mark the command cancelled** so agents stop working it. Operators and wizard tracking see the cancellation."))
+    cmd.get_mutable(valence, valence::use_!(r"When an operator or orchestrator **cancels** a non-terminal node action, we **mark the command cancelled** so agents stop working it. Operators and wizard tracking see the cancellation."))
         .set_status(PionNodeActionCommandStatus::Cancelled)?
         .set_updated_at(now)?
         .commit()
@@ -140,7 +140,7 @@ async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence)
 /// Propagates Valence query or update failures.
 pub async fn reconcile_node_action_commands(valence: &Valence) -> Result<()> {
     let now = Utc::now();
-    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
+    let rows = PionNodeActionCommand::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
         .await
         .context("query node action commands for reconcile")?;
 
@@ -238,7 +238,7 @@ pub async fn cancel_non_terminal_node_actions_for_correlation(
     if correlation_key.trim().is_empty() {
         return Ok(());
     }
-    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
+    let rows = PionNodeActionCommand::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .await
         .with_context(|| format!("query node action commands for correlation {correlation_key}"))?;
@@ -276,7 +276,7 @@ pub async fn reset_failed_node_actions_for_correlation(
     if correlation_key.trim().is_empty() {
         return Ok(None);
     }
-    let rows = PionNodeActionCommand::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
+    let rows = PionNodeActionCommand::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .await
         .with_context(|| format!("query node action commands for correlation {correlation_key}"))?;
@@ -301,7 +301,7 @@ pub async fn reset_failed_node_actions_for_correlation(
             else {
                 continue;
             };
-            cmd.get_mutable_used(valence, valence::use_!(r"When deploy **replans** after failure, we **reset the lowest failed sequence back to pending** so the pipeline can retry from that frontier. Orchestrators and operators use the revived commands."))
+            cmd.get_mutable(valence, valence::use_!(r"When deploy **replans** after failure, we **reset the lowest failed sequence back to pending** so the pipeline can retry from that frontier. Orchestrators and operators use the revived commands."))
                 .set_status(PionNodeActionCommandStatus::Pending)?
                 .set_attempt(0)?
                 .set_lease_expires_at(lease_sentinel())?
@@ -321,7 +321,7 @@ pub async fn reset_failed_node_actions_for_correlation(
 
     let min_cleanup = failed_min_seq.unwrap_or(1);
 
-    let rows2 = PionNodeActionCommand::query_used(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
+    let rows2 = PionNodeActionCommand::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Node Action Command** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
         .where_correlation_key(StringPredicate::Equals(correlation_key.to_string()))
         .await
         .with_context(|| {
@@ -373,7 +373,7 @@ pub async fn extend_node_action_lease(
     valence: &Valence,
 ) -> Result<(), NodeActionError> {
     let add = additional_secs.max(1);
-    let cmd = PionNodeActionCommand::get_used(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let cmd = PionNodeActionCommand::get(command_id, valence, valence::use_!("In **Pion control plane**, we **load Pion Node Action Command** so the application can decide what to do next in this workflow. The result is used by **Pion control plane** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .with_context(|| format!("load command {command_id} for lease extend"))?
         .ok_or_else(|| NodeActionError::CommandNotFound {
@@ -399,7 +399,7 @@ pub async fn extend_node_action_lease(
         now
     };
     let new_end = base + duration_from_u64_secs(add);
-    cmd.get_mutable_used(valence, valence::use_!(r"When an agent **extends the lease** on a running node action, we **push out lease_expires_at** so long-running work is not reconciled as abandoned. The agent and control plane use the new lease end."))
+    cmd.get_mutable(valence, valence::use_!(r"When an agent **extends the lease** on a running node action, we **push out lease_expires_at** so long-running work is not reconciled as abandoned. The agent and control plane use the new lease end."))
         .set_lease_expires_at(new_end)?
         .set_updated_at(now)?
         .commit()
