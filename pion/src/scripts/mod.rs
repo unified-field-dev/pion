@@ -8,7 +8,7 @@
 //!
 //! | Script | Purpose |
 //! |--------|---------|
-//! | [`migrate_gluon_control_plane_tables`] | **No-op** Chronon-stable job name (legacy Surreal table copy removed) |
+//! | [`migrate_gluon_control_plane_tables`] | **No-op** Chronon-stable job name (legacy table copy removed) |
 //! | `expired_lease_sweep` (feature `chronon`) | Cron `*/2 * * * *` → [`crate::reconcile_node_action_commands`] |
 //!
 //! # Testing

@@ -1,6 +1,6 @@
 //! Integration tests for [`pion::scripts::migrate_gluon_control_plane_tables`].
 //!
-//! The `SurrealQL` copy path was removed; the entrypoint is a no-op on `SQLite`/Hybrid.
+//! The legacy table-copy path was removed; the entrypoint is a no-op on `SQLite`/Hybrid.
 
 use pion::scripts::migrate_gluon_control_plane_tables::migrate_gluon_control_plane_tables_to_pion;
 

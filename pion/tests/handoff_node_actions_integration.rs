@@ -89,7 +89,7 @@ async fn deploy_handoff_enqueue_claim_preserves_payload() -> anyhow::Result<()> 
         .await?
         .expect("claimed command");
     assert_eq!(claimed.action_kind, NODE_ACTION_KIND_DEPLOY_HANDOFF);
-    // Surreal may wrap colon-bearing strings in backticks on round-trip; assert semantic fields.
+    // Assert semantic fields rather than raw stored-string formatting.
     assert_eq!(
         claimed
             .payload_json

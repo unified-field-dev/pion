@@ -13,7 +13,7 @@
 //! claim-time Neutrino resolution:
 //! `{"$secret_ref": {"id": "neutrino_secret:…", "version": 1}, "field": "password"}`.
 //! The `field` selects a string key in the stored JSON (for example the `password` key next to
-//! `user` in a Surreal root secret). See `secret_resolver` and `claim_pending_node_action`, which
+//! `user` in a stored root secret). See `secret_resolver` and `claim_pending_node_action`, which
 //! replace placeholders with strings before the agent runs Docker.
 
 use crate::generated::{PionControlPlaneNodeStatus, PionControlPlaneObservedStatusHealth};

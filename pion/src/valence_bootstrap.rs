@@ -91,7 +91,7 @@ impl BootstrappedValence {
 ///   `--features db-hybrid`.
 ///
 /// Always sets `VALENCE_OWNERSHIP_UNIFIED_FETCH=0` and `VALENCE_OWNERSHIP_COLOCATE=0` unless
-/// already set (`SQLite` / hybrid do not use Surreal-style ownership JOINs).
+/// already set (`SQLite` / hybrid do not use ownership JOINs).
 ///
 /// # Errors
 ///

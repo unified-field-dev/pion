@@ -30,7 +30,7 @@ impl pion::runtime::HasValenceRouter for HttpAppState {
 
 /// Holds bootstrap state for one matrix row.
 ///
-/// Sets ownership env flags so `SQLite` / hybrid test setups do not require Surreal-style ownership JOINs.
+/// Sets ownership env flags so `SQLite` / hybrid test setups do not need ownership JOINs.
 pub struct BootstrapSession {
     matrix: MatrixSpec,
     ready: bool,

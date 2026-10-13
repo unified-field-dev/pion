@@ -5,7 +5,7 @@
 //! progress events should use the `fleet.bootstrap.*` prefix. Pion keeps opaque `correlation_key`
 //! handling here; avoid adding new product-branded topics in this crate.
 
-/// Published when a DB infrastructure stack action (PD/TiKV/Surreal) is enqueued or transitions.
+/// Published when a DB infrastructure stack action (PD/TiKV) is enqueued or transitions.
 #[cfg(feature = "runtime")]
 #[photon::topic(name = "gluon.setup_wizard.db_infra.updated")]
 pub struct PionSetupWizardDbInfraUpdated {
