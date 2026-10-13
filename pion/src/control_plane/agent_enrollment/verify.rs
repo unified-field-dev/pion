@@ -191,7 +191,7 @@ pub async fn mark_enrollment_claimed(
         Err(EnrollmentError::NotPending) => return Ok(()),
         Err(e) => return Err(e),
     };
-    let row = PionAgentHostEnrollment::get(&enrollment_id, valence, valence::use_!(r"After a first-seen agent presents a valid **enrollment token** on heartbeat, we **load that enrollment ticket** so the control plane can mark it claimed. Control-plane ingest and Host Setup use this ticket state."))
+    let row = PionAgentHostEnrollment::get(&enrollment_id, valence, valence::use_!(r"After a first-seen agent presents a valid **enrollment token** on heartbeat, we **load that enrollment ticket** so the control plane can mark it claimed. Control-plane ingest and enrollment consoles use this ticket state."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to mark claimed"))?
         .ok_or(EnrollmentError::UnknownId)?;
@@ -200,7 +200,7 @@ pub async fn mark_enrollment_claimed(
     }
     let session_id_for_photon = row.setup_wizard_session_id().clone();
     let now = Utc::now();
-    row.get_mutable(valence, valence::use_!(r"After a first-seen agent **claims** a host enrollment ticket on heartbeat, we **mark the enrollment claimed** and pin the node id so the ticket cannot be reused. Control-plane ingest and Host Setup UIs use that status."))
+    row.get_mutable(valence, valence::use_!(r"After a first-seen agent **claims** a host enrollment ticket on heartbeat, we **mark the enrollment claimed** and pin the node id so the ticket cannot be reused. Control-plane ingest and enrollment consoles use that status."))
         .set_status(PionAgentHostEnrollmentStatus::Claimed)?
         .set_claimed_node_id(claimed_node_id.to_string())?
         .set_claimed_at(now)?

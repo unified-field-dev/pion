@@ -56,7 +56,7 @@ async fn resolve_claim_payload_or_mark_failed(
         return Ok(true);
     }
     let Some(res) = default_secret_resolver() else {
-        row.get_mutable(valence, valence::use_!(r"During **node action claim**, when the payload has secret placeholders but no secret resolver is installed, we **mark the command failed** with that error so the agent does not run an incomplete payload. Operators and wizard tracking see the failure."))
+        row.get_mutable(valence, valence::use_!(r"During **node action claim**, when the payload has secret placeholders but no secret resolver is installed, we **mark the command failed** with that error so the agent does not run an incomplete payload. Operators and any registered bootstrap notifier see the failure."))
             .set_status(PionNodeActionCommandStatus::Failed)?
             .set_last_error(clip(
                 "claim-time: payload has $secret_ref but no pion::SecretResolver installed; configure set_default_secret_resolver in the process host",
@@ -72,7 +72,7 @@ async fn resolve_claim_payload_or_mark_failed(
         return Ok(false);
     };
     if let Err(e) = resolve_secrets_in_json(valence, res.as_ref(), out_payload).await {
-        row.get_mutable(valence, valence::use_!(r"During **node action claim**, when secret placeholders cannot be resolved, we **mark the command failed** with the resolution error so the agent does not run an incomplete payload. Operators and wizard tracking see the failure."))
+        row.get_mutable(valence, valence::use_!(r"During **node action claim**, when secret placeholders cannot be resolved, we **mark the command failed** with the resolution error so the agent does not run an incomplete payload. Operators and any registered bootstrap notifier see the failure."))
             .set_status(PionNodeActionCommandStatus::Failed)?
             .set_last_error(clip(&format!("claim-time secret resolution: {e}"), CLIP))?
             .set_lease_expires_at(super::shared::lease_sentinel())?

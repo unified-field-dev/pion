@@ -61,7 +61,7 @@ async fn finish_failed_node_action_report(
         }
         crate::maybe_publish_setup_wizard_tracked_photon(correlation_key, "retry_pending").await;
     } else {
-        cmd.get_mutable(valence, valence::use_!(r"When an agent **reports failure** at max attempts, we **mark the command failed** with the error text. Operators and wizard tracking see the terminal failure."))
+        cmd.get_mutable(valence, valence::use_!(r"When an agent **reports failure** at max attempts, we **mark the command failed** with the error text. Operators and any registered bootstrap notifier see the terminal failure."))
             .set_status(PionNodeActionCommandStatus::Failed)?
             .set_last_error(clip(last, CLIP))?
             .set_updated_at(now)?
@@ -199,7 +199,7 @@ async fn report_node_action_result_inner(
         .with_context(|| format!("upsert node action result {result_id}"))?;
 
     if body.success {
-        cmd.get_mutable(valence, valence::use_!(r"When an agent **reports success** for a running node action, we **mark the command succeeded** so the queue and wizards advance. Operators and tracking UIs see the success."))
+        cmd.get_mutable(valence, valence::use_!(r"When an agent **reports success** for a running node action, we **mark the command succeeded** so the queue advances. Operators and any registered bootstrap notifier see the success."))
             .set_status(PionNodeActionCommandStatus::Succeeded)?
             .set_updated_at(now)?
             .commit()

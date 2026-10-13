@@ -105,7 +105,7 @@ pub async fn set_host_enrollment_pubkey(
     enrollment_id: &str,
     enrollment_pubkey_b64: &str,
 ) -> Result<()> {
-    let row = PionAgentHostEnrollment::get(enrollment_id, valence, valence::use_!(r"During **host enrollment** in the Pion control plane, we **load the pending enrollment ticket** so we can attach the agent's sealed-box public key. Operators running Host Setup and control-plane services use this ticket; the agent does not read the Valence row itself."))
+    let row = PionAgentHostEnrollment::get(enrollment_id, valence, valence::use_!(r"During **host enrollment** in the Pion control plane, we **load the pending enrollment ticket** so we can attach the agent's sealed-box public key. Operators and control-plane services use this ticket; the agent does not read the Valence row itself."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to set pubkey"))?
         .ok_or_else(|| anyhow!("enrollment {enrollment_id} not found"))?;
@@ -117,7 +117,7 @@ pub async fn set_host_enrollment_pubkey(
         anyhow::bail!("enrollment_pubkey is empty");
     }
     let m = row
-        .get_mutable(valence, valence::use_!(r"During **host enrollment** in the Pion control plane, we **write the agent's sealed-box public key** onto the pending enrollment ticket so later handoff can encrypt material to that host. Operators running Host Setup and control-plane services use the updated ticket."))
+        .get_mutable(valence, valence::use_!(r"During **host enrollment** in the Pion control plane, we **write the agent's sealed-box public key** onto the pending enrollment ticket so later handoff can encrypt material to that host. Operators and control-plane services use the updated ticket."))
         .set_enrollment_pubkey(pk.to_string())
         .with_context(|| format!("set enrollment_pubkey on enrollment {enrollment_id}"))?;
     m.commit()
@@ -132,7 +132,7 @@ pub async fn set_host_enrollment_pubkey(
 ///
 /// Returns `Err` when the enrollment is missing or Valence update fails.
 pub async fn revoke_host_enrollment(valence: &Valence, enrollment_id: &str) -> Result<()> {
-    let row = PionAgentHostEnrollment::get(enrollment_id, valence, valence::use_!(r"When Host Setup **revokes** a pending host enrollment ticket, we **load that enrollment** to confirm it is still pending before changing its status. Operators and the setup wizard use this ticket state."))
+    let row = PionAgentHostEnrollment::get(enrollment_id, valence, valence::use_!(r"When an operator **revokes** a pending host enrollment ticket, we **load that enrollment** to confirm it is still pending before changing its status. Operators and enrollment consoles use this ticket state."))
         .await
         .with_context(|| format!("load enrollment {enrollment_id} to revoke"))?
         .ok_or_else(|| anyhow!("enrollment not found"))?;
@@ -142,7 +142,7 @@ pub async fn revoke_host_enrollment(valence: &Valence, enrollment_id: &str) -> R
     let session_id_for_photon = row.setup_wizard_session_id().clone();
     let enrollment_id_owned = enrollment_id.to_string();
     let now = Utc::now();
-    row.get_mutable(valence, valence::use_!(r"When Host Setup **revokes** a pending host enrollment ticket, we **mark that enrollment revoked** so its wire token can no longer be claimed. Operators and the setup wizard see the revoked status on refresh."))
+    row.get_mutable(valence, valence::use_!(r"When an operator **revokes** a pending host enrollment ticket, we **mark that enrollment revoked** so its wire token can no longer be claimed. Operators and enrollment consoles see the revoked status on refresh."))
         .set_status(PionAgentHostEnrollmentStatus::Revoked)?
         .set_revoked_at(now)?
         .commit()

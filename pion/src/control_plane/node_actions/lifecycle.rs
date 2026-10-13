@@ -43,7 +43,7 @@ async fn reconcile_stale_pending_node_action(
         return Ok(());
     }
     if cmd
-        .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when no agent claimed a pending command in time, we **mark it failed** so operators know it timed out. Wizard tracking and operators see the failure."))
+        .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when no agent claimed a pending command in time, we **mark it failed** so operators know it timed out. Operators and any registered bootstrap notifier see the failure."))
         .set_status(PionNodeActionCommandStatus::Failed)?
         .set_last_error("No agent claimed this command within timeout".to_string())?
         .set_updated_at(now)?
@@ -66,7 +66,7 @@ async fn reconcile_expired_lease_node_action(
 ) -> Result<()> {
     if *cmd.attempt() >= *cmd.max_attempts() {
         if cmd
-            .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when a running command's lease expires after max attempts, we **mark it failed**. Operators and wizard tracking see the terminal failure."))
+            .get_mutable(valence, valence::use_!(r"During **node action reconcile**, when a running command's lease expires after max attempts, we **mark it failed**. Operators and any registered bootstrap notifier see the terminal failure."))
             .set_status(PionNodeActionCommandStatus::Failed)?
             .set_last_error("lease expired after max attempts".to_string())?
             .set_updated_at(now)?
@@ -124,7 +124,7 @@ async fn cancel_node_action_if_non_terminal(command_id: &str, valence: &Valence)
         return Ok(false);
     }
     let now = Utc::now();
-    cmd.get_mutable(valence, valence::use_!(r"When an operator or orchestrator **cancels** a non-terminal node action, we **mark the command cancelled** so agents stop working it. Operators and wizard tracking see the cancellation."))
+    cmd.get_mutable(valence, valence::use_!(r"When an operator or orchestrator **cancels** a non-terminal node action, we **mark the command cancelled** so agents stop working it. Operators and any registered bootstrap notifier see the cancellation."))
         .set_status(PionNodeActionCommandStatus::Cancelled)?
         .set_updated_at(now)?
         .commit()
