@@ -5,7 +5,7 @@ spectra_schema! {
         store: "pion",
         table: "pion_migration_log",
         version: "0.1.0",
-        description: "Legacy gluon_* to pion_* table migration progress.",
+        description: "Progress of the legacy control-plane table migration.",
         fields: [
             operation: {
                 r#type: String,

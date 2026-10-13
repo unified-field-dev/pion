@@ -1,8 +1,8 @@
 //! Process-wide hook for projecting Parton mount stats onto host storage rows.
 //!
 //! Heartbeat ingest stays free of orchestrator compile-time deps. Hosts register one or more
-//! implementations via [`register_registry_storage_projector`] (for example from
-//! `gluon::init_pion_hooks()` and `nucleus::volumes::init_volume_storage_hooks()`).
+//! implementations via [`register_registry_storage_projector`], for example one per
+//! storage subsystem the host links.
 //!
 //! Failures in a projector must not fail the heartbeat; implementations should log and
 //! return quietly. All registered projectors run (fan-out).
@@ -45,7 +45,7 @@ pub fn register_registry_storage_projector(p: Arc<dyn RegistryStorageProjector>)
 }
 
 /// Install a projector. Prefer [`register_registry_storage_projector`] when composing
-/// Gluon + Nucleus; this alias remains for existing call sites.
+/// several projectors; this alias remains for existing call sites.
 pub fn set_registry_storage_projector(p: Arc<dyn RegistryStorageProjector>) {
     register_registry_storage_projector(p);
 }

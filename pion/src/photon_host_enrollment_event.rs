@@ -1,9 +1,9 @@
-//! Photon topic for **host enrollment** changes (live Host Setup UI).
+//! Photon topic for host enrollment changes (for a live enrollment UI).
 //!
 //! # Topic string stability
 //!
 //! The `#[photon::topic(name = "...")]` string remains `gluon.setup_wizard.host_enrollment.updated`
-//! for subscriber compatibility. New fleet-bootstrap progress topics should use the
+//! for subscriber compatibility. New bootstrap progress topics should use the
 //! `fleet.bootstrap.*` prefix; this crate keeps the legacy name so existing subscribers keep
 //! working. Valence model: [`crate::generated::PionAgentHostEnrollment`].
 
@@ -11,7 +11,7 @@
 #[cfg(feature = "runtime")]
 #[photon::topic(name = "gluon.setup_wizard.host_enrollment.updated")]
 pub struct PionSetupWizardHostEnrollmentUpdated {
-    /// Setup-wizard session record id (often [`crate::DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID`]).
+    /// Bootstrap session record id (often [`crate::DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID`]).
     pub setup_wizard_session_id: String,
     /// Enrollment row id.
     pub enrollment_id: String,

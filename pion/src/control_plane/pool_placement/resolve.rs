@@ -1,7 +1,7 @@
 //! Selector-aware node resolution for [`crate::DeployTarget::Pool`] placement.
 //!
 //! [`resolve_eligible_pool_nodes`] is the single place that answers "which nodes may this pool
-//! place onto right now". Deploy resolution takes the first entry; Gluon placement can walk the
+//! place onto right now". Deploy resolution takes the first entry; an orchestrator can walk the
 //! ranked list to spread replicas.
 
 use std::collections::HashSet;
@@ -42,7 +42,7 @@ pub struct EligiblePoolNode {
 ///
 /// Filtering uses hardware the agent already reports through heartbeat (`arch`, `cpu_logical`,
 /// `memory_bytes`). Operator-managed labels are not consulted. Disk is out of scope here; volume
-/// headroom belongs to Gluon capacity planning against per-mount heartbeat data.
+/// headroom belongs to the orchestrator's capacity planning against per-mount heartbeat data.
 ///
 /// Pass [`NodeHardwareRequirements::default`] for an unconstrained placement. A pool with no
 /// stored selector (see [`VirtualPoolSelector::from_pool_columns`]) and an unconstrained

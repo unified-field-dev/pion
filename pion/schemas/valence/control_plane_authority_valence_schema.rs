@@ -7,7 +7,7 @@ valence_schema! {
         table: "pion_control_plane_authority",
         version: "0.1.1",
         database: crate::storage::CONTROL_PLANE_DEFAULT_STORAGE,
-        description: "Stable control-plane authority URL and Gluon-managed proxy routing (HAProxy v1)",
+        description: "Stable control-plane authority URL and orchestrator-managed proxy routing (HAProxy v1)",
 
         policies: {
             read:   { allow: [AUTHENTICATED] },

@@ -21,7 +21,7 @@ pub(super) enum AuthMode {
     SharedToken,
     /// Accept either a valid shared token or a valid JWT-SVID.
     Dual,
-    /// JWT-SVID required; shared token ignored (except insecure lab bypass).
+    /// JWT-SVID required; shared token ignored (except the insecure local bypass).
     Spiffe,
 }
 

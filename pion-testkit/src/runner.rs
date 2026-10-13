@@ -273,7 +273,7 @@ impl<'a> ScenarioRunner<'a> {
                 }
                 let t0 = Instant::now();
                 heartbeat_once(valence, lab).await?;
-                // Node action capabilities default to disabled (F7); the lab harness plays the
+                // Node action capabilities default to disabled; the harness plays the
                 // role of the operator opting this node into the actions scenarios exercise.
                 enable_lab_node_capabilities(valence, &lab.node_id).await?;
                 lab.healthy = true;

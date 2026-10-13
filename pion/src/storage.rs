@@ -1,8 +1,9 @@
-//! Valence storage for Pion control-plane schemas: **`SQLite` embedded CP** or **Postgres + in-memory cache** (Hybrid feature).
+//! Valence storage for Pion control-plane schemas: an embedded `SQLite` control plane, or
+//! Postgres with an in-memory cache (Hybrid feature).
 //!
-//! Control-plane tables use the **`gluon`** logical partition name (stable wire/schema key).
-//! Bootstraps register the same physical backend under both `default` and
-//! `gluon` so `Valence::active_backend` and schema `database:` evaluators agree.
+//! Control-plane tables use the `gluon` logical partition name, a historical key that is part of
+//! the stored schema and must stay as is. Bootstraps register the same physical backend under
+//! both `default` and `gluon` so `Valence::active_backend` and schema `database:` evaluators agree.
 //!
 //! # Profiles
 //!
@@ -11,10 +12,10 @@
 //! | default (no `db-hybrid`) | [`valence::SQLITE_ENGINE_ID`] | Embedded control plane (SQLite file or memory) |
 //! | `db-hybrid` ([`valence::HYBRID_ENGINE_ID`]) | Postgres + in-memory cache (IndraDB) | Distributed fleets |
 
-/// Logical name for schemas in the primary product partition (`gluon` key).
+/// Logical name for schemas in the primary control-plane partition (the `gluon` key).
 pub const GLUON_LOGICAL_NAME: &str = "gluon";
 
-/// Alias: control-plane schemas share the **`gluon`** logical partition.
+/// Alias: control-plane schemas share the `gluon` logical partition.
 pub const CONTROL_PLANE_LOGICAL_NAME: &str = "gluon";
 
 /// Engine id selected at compile time (`sqlite` unless `db-hybrid` is enabled).
@@ -45,5 +46,5 @@ pub const BOOTSTRAP_LOGICAL_NAMES: &[&str] = &["default", GLUON_LOGICAL_NAME];
 /// Default `SQLite` path when `VALENCE_SQLITE_PATH` is unset (file-backed smoke / server).
 pub const DEFAULT_SQLITE_PATH: &str = "data/pion.sqlite3";
 
-/// In-memory `SQLite` path for `IsolatedHarness` / unit tests.
+/// In-memory `SQLite` path for unit tests and the in-process test harness.
 pub const MEMORY_SQLITE_PATH: &str = ":memory:";

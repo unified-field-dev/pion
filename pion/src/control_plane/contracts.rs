@@ -193,10 +193,10 @@ pub struct DeployHandoffActionRequest {
     /// Docker network name (optional).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub network: Option<String>,
-    /// Reserved for Phase 3+ health wiring (HTTP check URL).
+    /// Reserved for future health-check wiring (HTTP check URL).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub health_url: Option<String>,
-    /// Reserved for Phase 3+ import endpoint wiring.
+    /// Reserved for future import-endpoint wiring.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub import_base_url: Option<String>,
     /// Optional handoff transfer id for orchestrator correlation.

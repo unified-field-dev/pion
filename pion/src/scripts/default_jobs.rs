@@ -1,8 +1,8 @@
 //! Pion Chronon default-job registration (feature `chronon`).
 //!
-//! Call [`register_default_jobs`] from the composite host at boot so attribute-declared
-//! defaults (e.g. `pion.node_actions.expired_lease_sweep`) are upserted. Prefer calling
-//! alongside Gluon's / Nucleus's registration when those crates are linked.
+//! Call [`register_default_jobs`] from the host application at boot so attribute-declared
+//! defaults (e.g. `pion.node_actions.expired_lease_sweep`) are upserted. Call it alongside the
+//! default-job registration of any other crates the host links.
 
 use std::sync::Arc;
 

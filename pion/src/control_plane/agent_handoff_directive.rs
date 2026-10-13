@@ -15,7 +15,7 @@ fn epoch() -> DateTime<Utc> {
     DateTime::<Utc>::UNIX_EPOCH
 }
 
-/// SHA-256 digest of `data`, lower-case hex (matches Parton agent + wizard issuance).
+/// SHA-256 digest of `data`, lower-case hex (matches Parton agent issuance).
 #[must_use]
 pub fn sha256_hex_bytes(data: &[u8]) -> String {
     use sha2::{Digest, Sha256};

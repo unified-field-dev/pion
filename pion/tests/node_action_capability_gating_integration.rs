@@ -1,5 +1,5 @@
 //! `health_check` / `handoff_bundle_import` node actions must be capability-gated like other
-//! infra-provisioning actions (F4): a caller must not be able to enqueue an agent-initiated
+//! infra-provisioning actions: a caller must not be able to enqueue an agent-initiated
 //! outbound-HTTP action for a node whose deploy capability has been disabled.
 #![cfg(feature = "runtime")]
 // Integration tests use `.expect()` / `.unwrap()` for brevity on fixtures.
@@ -54,7 +54,7 @@ async fn ready_node(v: &valence::Valence, node_id: &str, cell_id: &str) -> anyho
 async fn health_check_enqueue_succeeds_when_deploy_capability_enabled() -> anyhow::Result<()> {
     let v = common::test_valence("pion_health_check_cap_enabled").await;
     ready_node(&v, "node-hc-ok", "local-default").await?;
-    // Capabilities default to disabled (F7); the operator must opt this node into deploy.
+    // Capabilities default to disabled; the operator must opt this node into deploy.
     upsert_node_action_capability(
         "node-hc-ok",
         ContainerActionKind::Deploy,

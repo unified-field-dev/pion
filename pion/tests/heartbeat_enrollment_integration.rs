@@ -1,7 +1,7 @@
 //! End-to-end heartbeat ingest on in-memory Valence (enrollment + observed status).
 //!
 //! Complements the `parton` crate HTTP integration tests by exercising
-//! [`pion::ingest_agent_heartbeat`] directly against the same logical-router shape the composite
+//! [`pion::ingest_agent_heartbeat`] directly against the same logical-router shape a host
 //! server uses.
 
 #![cfg(feature = "runtime")]

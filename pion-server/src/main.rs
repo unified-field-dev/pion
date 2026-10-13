@@ -12,7 +12,7 @@
 //!
 //! # Getting started
 //!
-//! Prerequisites: set `PARTON_SHARED_TOKEN` (or lab-only `PION_ALLOW_INSECURE=1`).
+//! Prerequisites: set `PARTON_SHARED_TOKEN` (or `PION_ALLOW_INSECURE=1` for local testing only).
 //!
 //! ```bash
 //! export PARTON_SHARED_TOKEN=dev-shared-token
@@ -231,7 +231,7 @@ async fn health() -> impl IntoResponse {
 }
 
 /// Checks that Valence resolves its default backend, using the given `operation` label for the
-/// system actor. Shared by `/internal/db-ready` and `/cell/readiness` (F13).
+/// system actor. Shared by `/internal/db-ready` and `/cell/readiness`.
 fn valence_backend_error(state: &AppState, operation: &str) -> Option<String> {
     let valence = match Valence::builder()
         .database_router(Arc::clone(&state.router))
@@ -258,7 +258,7 @@ async fn db_ready(State(state): State<AppState>) -> impl IntoResponse {
     }
 }
 
-/// Cell readiness JSON for orchestration probes (F13).
+/// Cell readiness JSON for orchestration probes.
 ///
 /// `ready:true` requires both the Valence backend to be reachable (mirrors `/internal/db-ready`)
 /// and the process to be securely configured (`PARTON_SHARED_TOKEN` set, or the explicit
@@ -314,7 +314,7 @@ mod tests {
         }
     }
 
-    /// F13: `/cell/readiness` must not report `ready:true` with a reachable backend but no
+    /// `/cell/readiness` must not report `ready:true` with a reachable backend but no
     /// authentication configured — an orchestrator shouldn't route agent traffic to a replica
     /// that would silently accept unauthenticated `/api/parton/*` requests.
     #[tokio::test]

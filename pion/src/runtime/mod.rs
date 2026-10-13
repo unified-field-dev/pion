@@ -49,7 +49,7 @@ pub const AGENT_REQUEST_BODY_LIMIT_BYTES: usize = 1_048_576;
 /// Mount Parton agent ingest routes (heartbeat, action claim/result/extend-lease).
 ///
 /// Prerequisites: `S: `[`HasValenceRouter`] with Pion logical names registered; set
-/// `PARTON_SHARED_TOKEN` or lab-only `PION_ALLOW_INSECURE=1`.
+/// `PARTON_SHARED_TOKEN` or `PION_ALLOW_INSECURE=1` (local testing only).
 ///
 /// # Examples
 ///

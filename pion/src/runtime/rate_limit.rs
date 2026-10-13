@@ -1,4 +1,4 @@
-//! In-process token-bucket rate limiter for the Parton agent HTTP surface (H1 harden tier).
+//! In-process token-bucket rate limiter for the Parton agent HTTP surface.
 //!
 //! Deliberately minimal: a `std::sync::Mutex<HashMap<..>>` guarding one bucket per rate-limit key
 //! (peer IP, optionally combined with `node_id`). No extra crates — this only needs to survive one

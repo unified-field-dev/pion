@@ -1,4 +1,4 @@
-//! F12: `claim_pending_node_action` must never hand the same command to two concurrent
+//! `claim_pending_node_action` must never hand the same command to two concurrent
 //! claimers. Valence has no compare-and-swap primitive, so this documents the mitigation
 //! (post-commit re-read; abandon on lost race) rather than a true DB-level CAS guarantee.
 #![cfg(feature = "runtime")]
@@ -59,8 +59,8 @@ async fn ready_node(v: &valence::Valence, node_id: &str, cell_id: &str) -> anyho
 }
 
 /// Two concurrent claims against the same single pending command must not both succeed: at most
-/// one caller may receive `Some(..)`. This exercises the post-commit verification added for F12
-/// (Valence has no compare-and-swap, so this is a best-effort mitigation, not a hard guarantee
+/// one caller may receive `Some(..)`. This exercises the post-commit verification that guards against
+/// double claims (Valence has no compare-and-swap, so this is a best-effort mitigation, not a hard guarantee
 /// under every possible interleaving/backend).
 #[tokio::test]
 async fn concurrent_claims_never_both_succeed() -> anyhow::Result<()> {

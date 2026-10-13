@@ -3,7 +3,7 @@
 //!
 //! # Public API surface
 //!
-//! Most operators and the composite `server` should use the **crate-root** re-exports from the
+//! Most hosts should use the crate-root re-exports from the
 //! parent crate (for example [`crate::ingest_agent_heartbeat`] and [`crate::claim_pending_node_action`])
 //! rather than reaching into submodules here. This module exists to group implementation files for
 //! maintainers.

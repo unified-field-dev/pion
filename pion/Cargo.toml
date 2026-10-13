@@ -76,7 +76,7 @@ runtime = [
     "dep:metrics",
 ]
 # Chronon script inventory + default-job registration for expired lease sweeps.
-# Composite hosts enable this and call `scripts::register_default_jobs` at boot.
+# Host applications enable this and call `scripts::register_default_jobs` at boot.
 chronon = [
     "runtime",
     "dep:chronon-core",

@@ -32,7 +32,7 @@ async fn test_valence(operation: &str) -> Valence {
 }
 
 /// Seeds a pool whose hardware rule lives in the `hardware_selector_json` column, which is where
-/// operators and Gluon write it.
+/// operators and orchestrators write it.
 async fn seed_pool(valence: &Valence, hardware_selector: serde_json::Value) -> anyhow::Result<()> {
     seed_pool_columns(
         valence,

@@ -32,7 +32,7 @@ valence_schema! {
             correlation_key: { r#type: FieldType::String, required: true },
             sequence: { r#type: FieldType::Integer, required: true },
             last_error: { r#type: FieldType::String },
-            // F12: random per-claim-attempt fencing token, set by `claim_pending_node_action` on
+            // Random per-claim-attempt fencing token, set by `claim_pending_node_action` on
             // every pending->running transition and re-checked immediately after commit to detect
             // a lost race against a concurrent claimer. `lease_expires_at` can't be used for this
             // — it round-trips through storage at whole-second precision, so two claims committed

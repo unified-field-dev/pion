@@ -106,7 +106,7 @@ fn spiffe_ok(headers: &HeaderMap, node_id: &str) -> Result<(), (StatusCode, Stri
 /// - `shared_token` (default): `PARTON_SHARED_TOKEN` / `x-parton-token` (fails closed unless
 ///   [`insecure_mode_allowed`]).
 /// - `dual`: accept either a valid shared token **or** a valid JWT-SVID.
-/// - `spiffe`: require a valid JWT-SVID (shared token ignored); insecure lab bypass still applies
+/// - `spiffe`: require a valid JWT-SVID (shared token ignored); the insecure local bypass still applies
 ///   when no SPIFFE material is presented and `PION_ALLOW_INSECURE=1`.
 pub(super) fn authorize_agent_request(
     headers: &HeaderMap,
@@ -122,7 +122,7 @@ pub(super) fn authorize_agent_request(
         }
         AuthMode::Spiffe => {
             if insecure_mode_allowed() && spiffe::bearer_jwt_from_headers(headers).is_none() {
-                // Lab bypass: allow unsigned local traffic when explicitly opted in.
+                // Local bypass: allow unsigned local traffic when explicitly opted in.
                 return Ok(());
             }
             spiffe_ok(headers, node_id)
@@ -167,7 +167,7 @@ pub(super) fn authorize_node_binding(
     }
 }
 
-/// Rate-limit key combining peer IP with `node_id` when available (H1 harden tier).
+/// Rate-limit key combining peer IP with `node_id` when available.
 ///
 /// Keying on the pair (rather than IP alone) means one noisy/misbehaving node can't exhaust the
 /// budget of every other agent sharing a NAT gateway, while still bounding an unauthenticated

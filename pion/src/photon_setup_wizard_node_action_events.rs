@@ -1,7 +1,7 @@
-//! Photon topics for first-run / Host Setup progress driven by `PionNodeActionCommand`
+//! Photon topics for first-run setup progress driven by `PionNodeActionCommand`
 //! `correlation_key` prefixes (`gluon.setup_wizard.*.updated`).
 //!
-//! **Transitional:** topic strings stay for subscriber compatibility. New fleet-bootstrap
+//! The topic strings are legacy names kept for subscriber compatibility. New bootstrap
 //! progress events should use the `fleet.bootstrap.*` prefix. Pion keeps opaque `correlation_key`
 //! handling here; avoid adding new product-branded topics in this crate.
 
@@ -9,7 +9,7 @@
 #[cfg(feature = "runtime")]
 #[photon::topic(name = "gluon.setup_wizard.db_infra.updated")]
 pub struct PionSetupWizardDbInfraUpdated {
-    /// Setup-wizard session record id.
+    /// Bootstrap session record id.
     pub setup_wizard_session_id: String,
     /// Target cell id.
     pub cell_id: String,
@@ -17,11 +17,11 @@ pub struct PionSetupWizardDbInfraUpdated {
     pub status: String,
 }
 
-/// Gluon application / service deploy steps (e.g. `HAProxy` gateway per cell).
+/// Application and service deploy steps (e.g. `HAProxy` gateway per cell).
 #[cfg(feature = "runtime")]
 #[photon::topic(name = "gluon.setup_wizard.service_deploy.updated")]
 pub struct PionSetupWizardServiceDeployUpdated {
-    /// Setup-wizard session record id.
+    /// Bootstrap session record id.
     pub setup_wizard_session_id: String,
     /// Target cell id.
     pub cell_id: String,
@@ -33,7 +33,7 @@ pub struct PionSetupWizardServiceDeployUpdated {
 #[cfg(feature = "runtime")]
 #[photon::topic(name = "gluon.setup_wizard.capacity.updated")]
 pub struct PionSetupWizardCapacityUpdated {
-    /// Setup-wizard session record id.
+    /// Bootstrap session record id.
     pub setup_wizard_session_id: String,
     /// Target cell id.
     pub cell_id: String,
@@ -45,7 +45,7 @@ pub struct PionSetupWizardCapacityUpdated {
 #[cfg(feature = "runtime")]
 #[photon::topic(name = "gluon.setup_wizard.intercell_probe.updated")]
 pub struct PionSetupWizardIntercellProbeUpdated {
-    /// Setup-wizard session record id.
+    /// Bootstrap session record id.
     pub setup_wizard_session_id: String,
     /// Target cell id.
     pub cell_id: String,
@@ -53,7 +53,7 @@ pub struct PionSetupWizardIntercellProbeUpdated {
     pub status: String,
 }
 
-/// Default session id (matches setup-wizard-app `DEFAULT_SETUP_SESSION_ID`).
+/// Default bootstrap session id.
 #[cfg(feature = "runtime")]
 const DEFAULT_WIZARD_SESSION: &str = "default";
 

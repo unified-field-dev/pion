@@ -3,7 +3,7 @@
 //! # Entry points
 //!
 //! - [`ingest_agent_heartbeat`] — HTTP / router-facing alias used by
-//!   [`crate::runtime::parton_router`] and the composite server.
+//!   [`crate::runtime::parton_router`] and host servers.
 //! - [`ingest_node_heartbeat`] — core implementation (enrollment, cell seed, projections,
 //!   handoff directive collection).
 //!
@@ -386,7 +386,7 @@ async fn collect_handoff_directives_with_telemetry(
 
 /// Ingests a [`parton::NodeHeartbeatReport`] (same shape as the Parton agent JSON payload).
 ///
-/// This is the entrypoint the composite `server` and [`crate::runtime::parton_router`] use for
+/// This is the entrypoint host servers and [`crate::runtime::parton_router`] use for
 /// `/api/parton/heartbeat`. It delegates to [`ingest_node_heartbeat`].
 ///
 /// # Errors

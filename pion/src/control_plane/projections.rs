@@ -46,7 +46,7 @@ pub struct RuntimeContainerSnapshot {
 /// Runtime image summary projection used by control-plane UI/read APIs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RuntimeImageSnapshot {
-    /// Gluon catalog image id (when joined).
+    /// Image catalog id (when joined with a host's image catalog).
     pub image_id: String,
     /// Repository name component.
     pub name: String,
@@ -130,7 +130,7 @@ fn parse_container_summary(
     }
 }
 
-/// Parses `observed_json.images` for runtime image rollups (joined with Gluon image catalog in `gluon::runtime_image_snapshots`).
+/// Parses `observed_json.images` for runtime image rollups (a host can join the result with its own image catalog).
 pub fn parse_runtime_images(observed_json: &serde_json::Value) -> Vec<String> {
     let Some(images) = observed_json.get("images").and_then(|v| v.as_array()) else {
         return Vec::new();
@@ -170,7 +170,7 @@ pub fn parse_runtime_images(observed_json: &serde_json::Value) -> Vec<String> {
         .collect()
 }
 
-/// Image flavor label for control-plane runtime views (aligned with Gluon catalog split-build tags).
+/// Image flavor label for control-plane runtime views (aligned with split-build image tags).
 pub fn derive_image_flavor(_name: &str, tag: &str) -> String {
     let tag_lower = tag.trim().to_ascii_lowercase();
     if tag_lower == "monolithic" || tag_lower.ends_with("-monolithic") {
@@ -227,10 +227,10 @@ pub fn derive_image_flavor(_name: &str, tag: &str) -> String {
 
 /// Agent-connected control-plane nodes in `cell_id` (from heartbeats).
 ///
-/// This list is independent of `PionAgentHostEnrollment` wizard tickets. When strict enrollment is
+/// This list is independent of `PionAgentHostEnrollment` tickets. When strict enrollment is
 /// disabled via `PARTON_ENROLLMENT_STRICT_NEW_NODES=0`, [`super::heartbeat::ingest_node_heartbeat`]
 /// can create a new [`PionControlPlaneNode`] on the first heartbeat **without** claiming an enrollment
-/// row — so the setup wizard may show no enrollments while nodes still appear here.
+/// row, so an enrollment console may show no enrollments while nodes still appear here.
 ///
 /// Returns `(node_id, hostname)` sorted by node id.
 ///

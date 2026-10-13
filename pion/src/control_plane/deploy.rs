@@ -41,7 +41,7 @@ use super::{
 /// is still heartbeating; blocking deploy would prevent fixing that state (e.g. starting a registry).
 ///
 /// `failed` is set when the agent reports unhealthy running containers. Blocking the queue in that
-/// state prevents **recovery** deploys (Nucleus / Parton) from being enqueued for the very workload
+/// state prevents **recovery** deploys from being enqueued for the very workload
 /// that is unhealthy, so it is still eligible for the action queue (recovery deploys). The agent
 /// must be heartbeating; fully offline nodes remain ineligible.
 pub(crate) fn node_eligible_for_deploy(status: &PionControlPlaneNodeStatus) -> bool {

@@ -5,8 +5,8 @@
 //! side: it appears both inside a pool's stored selector and as the per-workload floor a caller
 //! passes at resolution time.
 //!
-//! Disk capacity is deliberately absent. Volume headroom is Gluon capacity planning against
-//! per-mount heartbeat data, not pool membership.
+//! Disk capacity is deliberately absent. Volume headroom is a capacity-planning concern for the
+//! orchestrator, computed from per-mount heartbeat data rather than pool membership.
 
 use serde::{Deserialize, Serialize};
 

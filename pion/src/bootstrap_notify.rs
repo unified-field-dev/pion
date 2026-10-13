@@ -1,18 +1,18 @@
-//! Process-wide hook for **local setup-wizard bootstrap** notifications from node-action paths.
+//! Process-wide hook for local bootstrap notifications from node-action paths.
 //!
-//! Node-action reconciliation can advance bootstrap pipelines that originated in the setup wizard.
+//! Node-action reconciliation can advance bootstrap pipelines that a host started elsewhere, so a
+//! host can register a notifier to re-evaluate them when a node action changes state.
 //! Hosts register an implementation at process startup via [`set_local_bootstrap_notifier`]
 //! (keeps orchestration peers out of this crate's dependency graph).
 //!
 //! # Integration
 //!
-//! Call your host's hook installer once after Valence is available (for example
-//! `gluon::init_pion_hooks()` when that peer is linked). The default notifier is a no-op, which
-//! keeps unit tests and minimal binaries quiet.
+//! Call your host's hook installer once after Valence is available. The default notifier is a
+//! no-op, which keeps unit tests and minimal binaries quiet.
 //!
 //! ```ignore
-//! // In server startup, after router + hooks:
-//! gluon::init_pion_hooks();
+//! // In server startup, after Valence bootstrap:
+//! my_host::install_pion_hooks();
 //! ```
 //!
 //! [`LocalBootstrapNotify`] is implemented by the host/orchestrator wiring that registers the hook.
@@ -22,7 +22,7 @@ use std::sync::{Arc, OnceLock};
 use async_trait::async_trait;
 use valence::Valence;
 
-/// Notifies local bootstrap flows when a wizard-scoped correlation key should be re-evaluated.
+/// Notifies local bootstrap flows when a bootstrap-scoped correlation key should be re-evaluated.
 #[async_trait]
 pub trait LocalBootstrapNotify: Send + Sync {
     /// Invoked after node-action mutations tied to `correlation_key` (best-effort).

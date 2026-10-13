@@ -4,8 +4,8 @@
 //! `#[chronon_coordinator_macros::script]` with `default_job` so hosts that call
 //! [`super::register_default_jobs`] get the job upserted at boot.
 //!
-//! Body: [`crate::reconcile_node_action_commands`] — same reconcile used by Gluon
-//! `process_bootstraps` and safe to keep as a hot-path safety net elsewhere.
+//! Body: [`crate::reconcile_node_action_commands`], the same reconcile a host can also call
+//! from its own hot path as a safety net.
 
 use anyhow::Result;
 

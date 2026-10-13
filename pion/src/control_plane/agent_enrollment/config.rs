@@ -1,13 +1,13 @@
 //! Enrollment defaults, feature flags, and host-hint normalization.
 
-/// Default bootstrap / Host Setup session record id (`"default"`).
+/// Default bootstrap session record id (`"default"`).
 ///
-/// Historical name referenced `gluon_setup_wizard_session`. Prefer
-/// [`DEFAULT_BOOTSTRAP_SESSION_RECORD_ID`]. Empty `setup_wizard_session_id` rows still match this
-/// id so Host Setup lists enrollments after upgrades.
+/// Prefer [`DEFAULT_BOOTSTRAP_SESSION_RECORD_ID`]. Empty `setup_wizard_session_id` rows (a stored
+/// field name kept for compatibility) still match this id so enrollment lists keep working after
+/// upgrades.
 pub const DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID: &str = "default";
 
-/// Neutral alias for [`DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID`] (fleet-bootstrap session id).
+/// Neutral alias for [`DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID`] (bootstrap session id).
 pub const DEFAULT_BOOTSTRAP_SESSION_RECORD_ID: &str = DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID;
 
 /// True when the operator has explicitly opted into running without a configured shared token.
@@ -46,7 +46,7 @@ pub fn enrollment_strict_new_nodes() -> bool {
 /// Require connecting peer IP to match enrollment `expected_agent_host` (host part only).
 ///
 /// **Default is `true` (secure).** Set `PARTON_ENROLLMENT_VERIFY_SOURCE_IP=0` (or `false` / `no` /
-/// `off`) only for NAT / port-forwarded lab setups where the enrolling agent's observed peer IP
+/// `off`) only for NAT / port-forwarded local setups where the enrolling agent's observed peer IP
 /// legitimately does not match the host hint recorded on the enrollment ticket (see
 /// `SECURITY.md` for the opt-out tradeoffs). Note the verify path already treats an empty
 /// `expected_agent_host` as "no host recorded, skip the check" regardless of this flag.
@@ -116,7 +116,7 @@ mod tests {
         clear_strict_enrollment_env();
     }
 
-    /// F8: `PARTON_ENROLLMENT_STRICT_NEW_NODES=0` alone (no `PION_ALLOW_INSECURE`) must be
+    /// `PARTON_ENROLLMENT_STRICT_NEW_NODES=0` alone (no `PION_ALLOW_INSECURE`) must be
     /// ignored — enrollment stays strict.
     #[test]
     #[serial]
@@ -130,7 +130,7 @@ mod tests {
         clear_strict_enrollment_env();
     }
 
-    /// F8: `PARTON_ENROLLMENT_STRICT_NEW_NODES=0` is only honored once `PION_ALLOW_INSECURE=1`
+    /// `PARTON_ENROLLMENT_STRICT_NEW_NODES=0` is only honored once `PION_ALLOW_INSECURE=1`
     /// is also set.
     #[test]
     #[serial]

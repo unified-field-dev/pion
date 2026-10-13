@@ -1,4 +1,4 @@
-//! Enrollment ticket CRUD: create, pin agent pubkey, revoke, and list for a setup-wizard session.
+//! Enrollment ticket CRUD: create, pin agent pubkey, revoke, and list for a bootstrap session.
 
 use anyhow::{anyhow, Context, Result};
 use chrono::Utc;
@@ -23,7 +23,7 @@ fn unset_dt() -> chrono::DateTime<Utc> {
 ///
 /// # Side effects
 ///
-/// Publishes [`crate::publish_setup_wizard_host_enrollment_updated`] (Photon) so Host Setup UIs can
+/// Publishes [`crate::publish_setup_wizard_host_enrollment_updated`] (Photon) so enrollment UIs can
 /// refresh.
 ///
 /// # Errors
@@ -126,7 +126,7 @@ pub async fn set_host_enrollment_pubkey(
     Ok(())
 }
 
-/// Revoke a pending enrollment (wizard "remove" accidental host ticket).
+/// Revoke a pending enrollment, for example a host ticket created by mistake.
 ///
 /// # Errors
 ///
@@ -162,10 +162,10 @@ pub async fn revoke_host_enrollment(valence: &Valence, enrollment_id: &str) -> R
     Ok(())
 }
 
-/// List enrollments created for a bootstrap / Host Setup session (pending + claimed + revoked).
+/// List enrollments created for a bootstrap session (pending, claimed and revoked).
 ///
 /// Prefer [`list_enrollments_for_bootstrap_session`] in new code. The Valence field remains
-/// `setup_wizard_session_id` until a schema migration wave.
+/// `setup_wizard_session_id` until a schema migration renames it.
 ///
 /// # Errors
 ///

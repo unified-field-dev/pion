@@ -39,7 +39,7 @@ pub trait SecretResolver: Send + Sync {
 
 static DEFAULT_SECRET_RESOLVER: OnceLock<Arc<dyn SecretResolver + Send + Sync>> = OnceLock::new();
 
-/// One-time install (typically from the composite `server` binary at startup).
+/// One-time install (typically from the host binary at startup).
 ///
 /// # Errors
 ///

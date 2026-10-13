@@ -9,31 +9,31 @@
 //!
 //! # Features
 //!
-//! - **Heartbeat ingest** — upsert node/cell inventory with [`ingest_agent_heartbeat`] /
-//!   [`ingest_node_heartbeat`] ([Heartbeat ingest](#heartbeat-ingest))
-//! - **Node-action queue** — enqueue, claim, lease, and report with [`enqueue_node_action`],
+//! - Heartbeat ingest: upsert node/cell inventory with [`ingest_agent_heartbeat`] /
+//!   [`ingest_node_heartbeat`] ([Heartbeat ingest](#heartbeat-ingest)).
+//! - Node-action queue: enqueue, claim, lease, and report with [`enqueue_node_action`],
 //!   [`claim_pending_node_action`], [`report_node_action_result`], and
-//!   [`list_node_action_capability_map`] ([Node-action queue](#node-action-queue))
-//! - **Host enrollment** — one-time `ghe.<id>.<secret>` tickets via [`create_host_enrollment`]
-//!   and [`list_enrollments_for_session`] ([Host enrollment](#host-enrollment))
-//! - **Handoff directives** — mint and deliver signed Parton directives with
+//!   [`list_node_action_capability_map`] ([Node-action queue](#node-action-queue)).
+//! - Host enrollment: one-time `ghe.<id>.<secret>` tickets via [`create_host_enrollment`]
+//!   and [`list_enrollments_for_session`] ([Host enrollment](#host-enrollment)).
+//! - Handoff directives: mint and deliver signed Parton directives with
 //!   [`sign_re_enroll_directive`] and [`collect_handoff_directives_for_heartbeat`]
-//!   ([Handoff directives](#handoff-directives))
-//! - **System-owned handoff schema** — Authority handoff and agent directive rows are
+//!   ([Handoff directives](#handoff-directives)).
+//! - System-owned handoff schema: authority handoff and agent directive rows are
 //!   `SYSTEM_ONLY` for create/update/delete so interactive session actors cannot
-//!   mutate them directly ([System-owned handoff rows](#system-owned-handoff-rows))
-//! - **Secret-ref at claim** — Neutrino `$secret_ref` placeholders resolve only at claim through
+//!   mutate them directly ([System-owned handoff rows](#system-owned-handoff-rows)).
+//! - Secret-ref at claim: `$secret_ref` placeholders resolve only at claim through
 //!   [`try_resolve_one_secret_ref`], [`resolve_secrets_in_json`], and [`SecretResolver`]
-//!   ([Secret-ref at claim](#secret-ref-at-claim))
-//! - **HTTP Parton surface** — mount [`runtime::parton_router`] (see [`runtime::HasValenceRouter`])
-//!   ([HTTP Parton surface](#http-parton-surface))
-//! - **Auth / SPIFFE / rate limits** — fail-closed token or SPIFFE on agent routes in [`runtime`]
-//!   ([Auth, SPIFFE, and rate limits](#auth-spiffe-and-rate-limits))
-//! - **Spectra / Prometheus** — product telemetry in [`logging`] and scrape metrics in
-//!   [`prom_metrics`] ([Spectra and Prometheus](#spectra-and-prometheus))
-//! - **Orchestrator hooks** — process-local bootstrap and mount-stats notify via
+//!   ([Secret-ref at claim](#secret-ref-at-claim)).
+//! - HTTP Parton surface: mount [`runtime::parton_router`] (see [`runtime::HasValenceRouter`])
+//!   ([HTTP Parton surface](#http-parton-surface)).
+//! - Auth, SPIFFE and rate limits: fail-closed token or SPIFFE on agent routes in [`runtime`]
+//!   ([Auth, SPIFFE, and rate limits](#auth-spiffe-and-rate-limits)).
+//! - Spectra and Prometheus: product telemetry in [`logging`] and scrape metrics in
+//!   [`prom_metrics`] ([Spectra and Prometheus](#spectra-and-prometheus)).
+//! - Orchestrator hooks: process-local bootstrap and mount-stats notification via
 //!   [`bootstrap_notify`] and [`registry_storage_notify`]
-//!   ([Orchestrator hooks](#orchestrator-hooks))
+//!   ([Orchestrator hooks](#orchestrator-hooks)).
 //!
 //! # Getting started
 //!
@@ -41,7 +41,7 @@
 //! registered Pion logical names (`default` + `gluon`) via
 //! [`valence_bootstrap::bootstrap_valence`] / [`storage::BOOTSTRAP_LOGICAL_NAMES`].
 //!
-//! 1. Bootstrap Valence (`SQLite` memory for labs, or file / Hybrid for durable stores).
+//! 1. Bootstrap Valence (`SQLite` memory for tests and local runs, or file / Hybrid for durable stores).
 //! 2. Call [`ingest_agent_heartbeat`] with a [`parton::NodeHeartbeatReport`].
 //! 3. Read [`parton::HeartbeatResponse::acknowledged_at`] — ingest succeeded when the call returns `Ok`.
 //!
@@ -58,14 +58,14 @@
 //! # }
 //! ```
 //!
-//! Runnable HTTP smoke (in-memory `SQLite` + insecure lab auth):
+//! Runnable HTTP smoke (in-memory `SQLite` + insecure local auth):
 //! `cargo run -p pion --example parton_router_smoke --features runtime`
 //! (set `PION_ALLOW_INSECURE=1` and `PARTON_ENROLLMENT_STRICT_NEW_NODES=0`). Success stdout:
 //! `parton_router_smoke: OK`.
 //!
-//! Operator binary: `cargo run -p pion-server` with `PARTON_SHARED_TOKEN` set (or lab-only
-//! `PION_ALLOW_INSECURE=1`). Vulnerability reporting: repository `SECURITY.md`. SPIFFE:
-//! `docs/spiffe.md`.
+//! Operator binary: `cargo run -p pion-server` with `PARTON_SHARED_TOKEN` set (or
+//! `PION_ALLOW_INSECURE=1` for local testing only). Vulnerability reporting:
+//! [`SECURITY.md`](https://github.com/unified-field-dev/pion/blob/main/SECURITY.md). SPIFFE: [`docs/spiffe.md`](https://github.com/unified-field-dev/pion/blob/main/docs/spiffe.md).
 //!
 //! Next: pick a branching path from [Features](#features), or continue with the sections below.
 //!
@@ -76,7 +76,7 @@
 //! response.
 //!
 //! Prerequisites: `runtime` feature; Valence bootstrapped with Pion logical names; for first-seen
-//! nodes under strict enrollment, a valid `ghe.<id>.<secret>` token on the report (lab:
+//! nodes under strict enrollment, a valid `ghe.<id>.<secret>` token on the report (local testing:
 //! `PION_ALLOW_INSECURE=1` + `PARTON_ENROLLMENT_STRICT_NEW_NODES=0`).
 //!
 //! 1. Build or receive a [`parton::NodeHeartbeatReport`].
@@ -214,7 +214,7 @@
 //!
 //! # Secret-ref at claim
 //!
-//! Queued payloads store Neutrino placeholders, not secret values. At claim, placeholders become
+//! Queued payloads store `$secret_ref` placeholders, not secret values. At claim, placeholders become
 //! strings when a [`SecretResolver`] is installed.
 //!
 //! Wire shape (for example in a `command` array entry):
@@ -340,9 +340,9 @@
 //! `/api/parton/actions/extend-lease`.
 //!
 //! Prerequisites: `runtime` feature; implement [`runtime::HasValenceRouter`] on app state; set
-//! `PARTON_SHARED_TOKEN` (or lab `PION_ALLOW_INSECURE=1`).
+//! `PARTON_SHARED_TOKEN` (or `PION_ALLOW_INSECURE=1` for local testing).
 //!
-//! 1. Bootstrap Valence ([`valence_bootstrap::bootstrap_sqlite_memory`] in labs).
+//! 1. Bootstrap Valence ([`valence_bootstrap::bootstrap_sqlite_memory`] for tests).
 //! 2. Implement [`runtime::HasValenceRouter`].
 //! 3. `Router::new().merge(parton_router::<AppState>()).with_state(state)`.
 //! 4. Agents POST JSON with `x-parton-node-id` (and token headers when secure).
@@ -365,13 +365,13 @@
 //!
 //! Agent routes fail closed without `PARTON_SHARED_TOKEN` unless `PION_ALLOW_INSECURE=1`.
 //! Optional SPIFFE JWT-SVID via `PION_AUTH_MODE` (`shared_token` / `dual` / `spiffe`) and
-//! `PION_SPIFFE_*` — see `docs/spiffe.md`. Per-node binding uses `x-parton-node-id`. Rate limit
+//! `PION_SPIFFE_*`; see [`docs/spiffe.md`](https://github.com/unified-field-dev/pion/blob/main/docs/spiffe.md). Per-node binding uses `x-parton-node-id`. Rate limit
 //! default: `PION_AGENT_RATE_LIMIT_PER_MIN` (120).
 //!
 //! Prerequisites: env configured before serving. Implementation lives under [`runtime`]
 //! (`auth`, `spiffe`, `rate_limit` modules).
 //!
-//! 1. Set `PARTON_SHARED_TOKEN` (or lab-only `PION_ALLOW_INSECURE=1`).
+//! 1. Set `PARTON_SHARED_TOKEN` (or `PION_ALLOW_INSECURE=1` for local testing only).
 //! 2. Optionally set `PION_AUTH_MODE` / `PION_SPIFFE_*` for dual or SPIFFE-only.
 //! 3. Serve [`runtime::parton_router`] (or `cargo run -p pion-server`).
 //! 4. Probe `GET /cell/readiness` → `{"ready":true}` when Valence and auth config are up.
@@ -382,7 +382,7 @@
 //!
 //! ```text
 //! PARTON_SHARED_TOKEN=dev-shared-token
-//! # optional: PION_AUTH_MODE=dual  + PION_SPIFFE_* (see docs/spiffe.md)
+//! # optional: PION_AUTH_MODE=dual  + PION_SPIFFE_* (see docs/spiffe.md in the repository)
 //! cargo run -p pion-server
 //! # then: curl -s localhost:3000/cell/readiness   → {"ready":true}
 //! ```
@@ -420,10 +420,10 @@
 //!
 //! Prerequisites: Valence available; call installers once at startup.
 //!
-//! 1. [`bootstrap_notify::set_local_bootstrap_notifier`] — wizard correlation re-eval after
-//!    node-action mutations ([`bootstrap_notify::LocalBootstrapNotify`]).
-//! 2. [`registry_storage_notify::set_registry_storage_projector`] — mount-stats → host
-//!    storage projection ([`registry_storage_notify::RegistryStorageProjector`]).
+//! 1. [`bootstrap_notify::set_local_bootstrap_notifier`]: re-evaluate bootstrap correlations
+//!    after node-action mutations ([`bootstrap_notify::LocalBootstrapNotify`]).
+//! 2. [`registry_storage_notify::set_registry_storage_projector`]: project mount stats onto
+//!    host storage rows ([`registry_storage_notify::RegistryStorageProjector`]).
 //!
 //! Default notifiers are no-ops. Failures stay inside the host notifier (must not fail the
 //! node-action path). Next: [Node-action queue](#node-action-queue).
@@ -455,8 +455,9 @@
 //!
 //! | Flag | Effect |
 //! |------|--------|
-//! | **`runtime`** | Full stack: Valence, Parton types, [`runtime`] Axum router, control-plane APIs |
-//! | **`db-hybrid`** | Compile against distributed Postgres + in-memory cache (default storage is `SQLite`) |
+//! | `runtime` | Full stack: Valence, Parton types, [`runtime`] Axum router, control-plane APIs |
+//! | `db-hybrid` | Compile against distributed Postgres + in-memory cache (default storage is `SQLite`) |
+//! | `chronon` | Implies `runtime`. Chronon script inventory and `scripts::register_default_jobs` for the expired-lease sweep |
 //! | *(default, no `runtime`)* | Exports [`OBSERVED_STALE_AFTER_SECS`] only (WASM-friendly optional dep) |
 //!
 //! Re-exported Parton wire types (`NodeHeartbeatReport`, `AgentDirective`,
@@ -464,10 +465,10 @@
 //!
 //! # Further reading
 //!
-//! - [`README.md`](../README.md) — operator overview
-//! - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — lint policy and doc conventions
-//! - [`docs/VERIFICATION.md`](../../docs/VERIFICATION.md) — fmt / clippy / test / rustdoc gate
-//! - [`examples/README.md`](examples/README.md) — `parton_router_smoke` teaching path
+//! - [`README.md`](https://github.com/unified-field-dev/pion/blob/main/pion/README.md): crate overview
+//! - [`CONTRIBUTING.md`](https://github.com/unified-field-dev/pion/blob/main/CONTRIBUTING.md): lint policy and doc conventions
+//! - [`docs/VERIFICATION.md`](https://github.com/unified-field-dev/pion/blob/main/docs/VERIFICATION.md): fmt, clippy, test and rustdoc gate
+//! - [`examples/README.md`](https://github.com/unified-field-dev/pion/blob/main/pion/examples/README.md): `parton_router_smoke` teaching path
 
 #![cfg_attr(all(feature = "runtime", doc), deny(rustdoc::broken_intra_doc_links))]
 

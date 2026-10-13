@@ -21,7 +21,7 @@ use crate::storage::{
 pub enum StorageProfile {
     /// File or `:memory:` `SQLite` (embedded host pattern).
     Sqlite,
-    /// Postgres primary + in-process `IndraDB` cache (remote-fleet pattern).
+    /// Postgres primary + in-process `IndraDB` cache (shared fleet database pattern).
     Hybrid,
 }
 
@@ -175,7 +175,7 @@ pub async fn bootstrap_valence_from_env() -> Result<BootstrappedValence> {
     bootstrap_valence(compile).await
 }
 
-/// In-memory `SQLite` bootstrap for `IsolatedHarness` / unit tests.
+/// In-memory `SQLite` bootstrap for unit tests and the in-process test harness.
 ///
 /// # Errors
 ///

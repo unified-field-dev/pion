@@ -5,13 +5,13 @@
 //!
 //! With Cargo feature **`chronon`**, [`EXPIRED_LEASE_SWEEP`] is realized as script
 //! `pion_node_actions_expired_lease_sweep` (job name `pion.node_actions.expired_lease_sweep`,
-//! cron `*/2 * * * *`). Composite hosts call `pion::scripts::register_default_jobs` at boot so
+//! cron `*/2 * * * *`). Host applications call `pion::scripts::register_default_jobs` at boot so
 //! Chronon upserts the job.
 //!
 //! The other specs below remain inventory-only until their scripts land the same way.
-//! Until then (and as a safety net even with Chronon), Gluon `process_bootstraps` and any
-//! host that calls [`crate::reconcile_node_action_commands`] still reconcile expired leases
-//! opportunistically when that path runs.
+//! Until then (and as a safety net even with Chronon), any host that calls
+//! [`crate::reconcile_node_action_commands`] reconciles expired leases opportunistically
+//! when that path runs.
 //!
 //! ```
 //! use pion::chronon_hooks::ALL_JOBS;

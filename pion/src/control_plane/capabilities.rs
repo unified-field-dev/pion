@@ -313,7 +313,7 @@ mod tests {
         boot.valence("capabilities_test").expect("valence build")
     }
 
-    /// F7: fresh capability rows must default to `enabled: false` — operators opt nodes into
+    /// Fresh capability rows must default to `enabled: false` — operators opt nodes into
     /// deploy/exec-shaped actions explicitly via [`upsert_node_action_capability`].
     #[tokio::test]
     async fn ensure_default_node_action_capabilities_seeds_disabled_rows() -> anyhow::Result<()> {

@@ -14,8 +14,8 @@
 //! report those labels and today they are empty, so a label-based rule would silently match
 //! nothing.
 //!
-//! Disk is not a selector dimension. Volume headroom stays with Gluon capacity planning, which
-//! needs per-mount figures rather than pool membership.
+//! Disk is not a selector dimension. Volume headroom is a capacity-planning concern for the
+//! orchestrator, which needs per-mount figures rather than pool membership.
 //!
 //! # Compatibility
 //!

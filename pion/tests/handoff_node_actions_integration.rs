@@ -45,7 +45,7 @@ async fn ready_node(v: &valence::Valence, node_id: &str, cell_id: &str) -> anyho
         apply_failed: None,
     };
     ingest_agent_heartbeat(&report, Some("127.0.0.1"), v).await?;
-    // Capabilities default to disabled (F7); opt this node into deploy/stop for handoff tests.
+    // Capabilities default to disabled; opt this node into deploy/stop for handoff tests.
     for action in [ContainerActionKind::Deploy, ContainerActionKind::Stop] {
         upsert_node_action_capability(node_id, action, true, "test", None, None, v).await?;
     }
