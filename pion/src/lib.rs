@@ -438,8 +438,8 @@
 //!
 //! # Binary runtimes
 //!
-//! - **`pion-server`**: slim headless ingest process (Parton routes + health/readiness/metrics).
-//! - **`pion` binary**: stub entry for split deployments; prefer `pion-server` or embedding this
+//! - `pion-server`: slim headless ingest process (Parton routes + health/readiness/metrics).
+//! - `pion` binary: stub entry for split deployments; prefer `pion-server` or embedding this
 //!   library.
 //!
 //! # Integration checklist (host binary)

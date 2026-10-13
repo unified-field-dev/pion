@@ -6,7 +6,7 @@ license.workspace = true
 authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
-description = "Synthetic Pion + Parton benchmarks (BM-R*)"
+description = "Synthetic Pion + Parton latency and throughput benchmarks"
 publish = false
 readme = "README.md"
 

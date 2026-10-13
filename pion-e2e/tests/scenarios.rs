@@ -1,4 +1,4 @@
-//! `IsolatedHarness` + Stub enroll → deploy claim/report smoke.
+//! In-process harness + stub executor: enroll → deploy claim/report smoke.
 
 use pion_testkit::{
     BootstrapSession, Executor, Hardware, MatrixSpec, RunMode, ScenarioRunner, ScenarioSpec,

@@ -12,7 +12,7 @@ pub enum ScenarioStep {
     HeartbeatUntilHealthy,
     /// `docker pull` the shared bench image (warm path; not counted in cold TTR).
     PrePullImage,
-    /// Enqueue a `deploy_handoff` node action for the lab node.
+    /// Enqueue a `deploy_handoff` node action for the harness node.
     EnqueueDeploy,
     /// Claim the pending action and acknowledge without executing (schedule latency).
     ClaimAndAck,
@@ -60,7 +60,7 @@ pub struct ScenarioSpec {
 impl ScenarioSpec {
     /// Enroll → heartbeat → `deploy_handoff` → claim → stub execute → success.
     ///
-    /// Primary `IsolatedHarness` correctness smoke used by `pion-e2e` and BM-R1 warm-up.
+    /// Primary in-process correctness smoke used by `pion-e2e` and the single-deploy benchmark warm-up.
     #[must_use]
     pub fn enroll_deploy_smoke() -> Self {
         Self {
@@ -75,7 +75,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// `LocalDocker` / AWS warm deploy with pre-pull (BM-D1 / e2e docker gate).
+    /// `LocalDocker` / AWS warm deploy with pre-pull (warm deploy benchmark and the Docker-gated e2e test).
     #[must_use]
     pub fn enroll_deploy_warm_docker() -> Self {
         Self {
@@ -91,7 +91,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Warm deploy + teardown → gone (BM-D2).
+    /// Warm deploy + teardown → gone (teardown benchmark).
     #[must_use]
     pub fn enroll_teardown_gone_docker() -> Self {
         Self {
@@ -110,7 +110,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Cold pull + deploy (BM-D3): no `PrePullImage`; pull happens inside deploy if missing.
+    /// Cold pull + deploy (cold-start benchmark): no `PrePullImage`; pull happens inside deploy if missing.
     #[must_use]
     pub fn enroll_deploy_cold_docker() -> Self {
         Self {
@@ -125,7 +125,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Schedule path only: enqueue → claim ack (BM-D0).
+    /// Schedule path only: enqueue → claim ack (scheduling benchmark).
     #[must_use]
     pub fn schedule_claim_smoke() -> Self {
         Self {
@@ -139,7 +139,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Heartbeat RTT smoke (BM-R0): enroll once, then repeated healthy heartbeats.
+    /// Heartbeat round-trip smoke: enroll once, then repeated healthy heartbeats.
     #[must_use]
     pub fn heartbeat_rtt_smoke() -> Self {
         Self {
@@ -151,7 +151,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Single teardown after a warm stub deploy (BM-R2).
+    /// Single teardown after a warm stub deploy (stub teardown benchmark).
     #[must_use]
     pub fn enroll_teardown_smoke() -> Self {
         Self {
@@ -169,7 +169,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Small firehose stub (BM-RF0 skeleton): N=10, c=2.
+    /// Small firehose stub: N=10, c=2.
     #[must_use]
     pub fn firehose_deploy_stub() -> Self {
         Self {
@@ -185,7 +185,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Edge firehose BM-DF0: N=50, c=4 with optional pre-pull for warm starts.
+    /// Edge firehose: N=50, c=4 with optional pre-pull for warm starts.
     #[must_use]
     pub fn firehose_deploy_df0() -> Self {
         Self {
@@ -202,7 +202,7 @@ impl ScenarioSpec {
         }
     }
 
-    /// Configurable firehose (BM-DF1 / DM cells).
+    /// Configurable firehose (custom N and concurrency, multi-agent cells).
     #[must_use]
     pub fn firehose_deploy_n(n: u32, concurrency: u32) -> Self {
         Self {

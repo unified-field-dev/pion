@@ -1,4 +1,4 @@
-//! Slim headless **`pion-server`** binary.
+//! Slim headless `pion-server` binary.
 //!
 //! Serves the Parton agent ingest surface ([`pion::runtime::parton_router`]) on Valence
 //! (`SQLite` by default, or Hybrid with `--features db-hybrid` + `DATABASE_URL`), plus operator
@@ -6,9 +6,9 @@
 //!
 //! # Features
 //!
-//! - **Parton agent HTTP** — `/api/parton/*` via [`pion::runtime::parton_router`]
-//! - **Health / readiness** — `/health`, `/internal/db-ready`, `/cell/readiness`
-//! - **Prometheus** — `/metrics` (library counters from [`pion::prom_metrics`])
+//! - Parton agent HTTP: `/api/parton/*` via [`pion::runtime::parton_router`].
+//! - Health and readiness: `/health`, `/internal/db-ready`, `/cell/readiness`.
+//! - Prometheus: `/metrics` (library counters from [`pion::prom_metrics`]).
 //!
 //! # Getting started
 //!
@@ -16,9 +16,14 @@
 //!
 //! ```bash
 //! export PARTON_SHARED_TOKEN=dev-shared-token
-//! export CARGO_BUILD_JOBS=1
-//! export CARGO_TARGET_DIR=target-pion
 //! cargo run -p pion-server
+//! ```
+//!
+//! In a second shell, confirm it is serving:
+//!
+//! ```bash
+//! curl -s localhost:3000/health
+//! curl -s localhost:3000/cell/readiness   # {"ready":true}
 //! ```
 //!
 //! Observable outcome: process listens on `PION_BIND` (default `127.0.0.1:3000`);
@@ -67,7 +72,7 @@
 //!
 //! | Flag | Effect |
 //! |------|--------|
-//! | **`db-hybrid`** | Enables `pion/db-hybrid` (Postgres + in-memory cache) |
+//! | `db-hybrid` | Enables `pion/db-hybrid` (Postgres + in-memory cache) |
 
 use std::net::SocketAddr;
 use std::sync::{Arc, OnceLock};

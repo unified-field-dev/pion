@@ -115,7 +115,7 @@ impl TelemetryAdapter {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub enum Hardware {
-    /// Local WSL / laptop — **non-authoritative** DIY only.
+    /// Local workstation; non-authoritative, for development only.
     #[default]
     DevWsl,
     /// AWS `t3.large` / medium-class smoke.
@@ -188,7 +188,7 @@ impl MatrixSpec {
         }
     }
 
-    /// Isolated-harness stub on labeled hardware (same-region EC2 smoke when you run there).
+    /// In-process harness stub tagged with a hardware label (for example a same-region EC2 smoke run).
     #[must_use]
     pub const fn isolated_harness_stub_on(hardware: Hardware) -> Self {
         Self {

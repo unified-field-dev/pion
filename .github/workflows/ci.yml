@@ -60,7 +60,7 @@ jobs:
         run: cargo test -p pion --features runtime
       - name: cargo test (pion-server)
         run: cargo test -p pion-server
-      - name: cargo test (pion-e2e IsolatedHarness)
+      - name: cargo test (pion-e2e in-process harness)
         run: cargo test -p pion-e2e
       - name: cargo test (pion-spectra-topics)
         run: cargo test -p pion-spectra-topics

@@ -1,17 +1,29 @@
 # Pion performance
 
-Measured on AWS same-region (`c6i.large` hybrid docker-cli) and multi-region (WAN) hosts. Pion is the edge/ingest kit sitting above Parton and Photon for fleet-facing traffic paths. Fair-compare matrices live in the private `uf-live-cloud-lab` pion performance study.
+These figures were measured on AWS same-region hosts (`c6i.large`, hybrid storage, Docker CLI
+executor) and on multi-region (WAN) hosts. The `pion-bench` CLI in this repository runs the same
+scenarios; see [`README.md`](README.md) for the commands.
 
 ## Latency and throughput
 
-Warm deploy → Ready (BM-D1, n=10): p50/p95 **308 / 538 ms**. Same shared image on kind k8s: **949 / 1925 ms**. Teardown → Gone (BM-D2): **~174 / 184 ms**. Firehose starts (BM-DF0): about **2 starts/s** per agent host at the measured Tier A shape.
+| Scenario | Experiment id | Result |
+|----------|---------------|--------|
+| Warm deploy to Ready (n=10) | `bm-d1` | p50 / p95 of 308 / 538 ms |
+| Same warm deploy on a kind Kubernetes cluster | n/a | p50 / p95 of 949 / 1925 ms |
+| Teardown to Gone | `bm-d2` | about 174 / 184 ms |
+| Firehose of 50 starts at concurrency 4 | `bm-df0` | about 2 starts per second per agent host |
 
-Same-region CP/agent layouts bound the baseline for edge ingest and fair-compare runs. WAN (multi-region) paths add RTT-dominated cost; quote WAN numbers only for products that truly span regions. Nomad warm-TTR rows from single-node `-dev` are not decision-grade.
+Same-region control-plane and agent layouts set the baseline for ingest and comparison runs.
+WAN paths add RTT-dominated cost, so quote WAN numbers only for products that span regions.
+Nomad warm time-to-ready rows from a single-node `-dev` cluster are not decision-grade.
 
 ## Guidance
 
-Use same-region AWS figures for default capacity planning. Treat WAN deltas as additive latency budgets, not as a replacement for same-region peaks. Tier A did not validate 5k-vCPU / 200-region projections.
+Use the same-region AWS figures for default capacity planning. Add WAN deltas to them as a
+latency budget. These runs did not validate projections at 5k vCPUs or 200 regions.
 
 ## How to read these results
 
-AWS hardware tags are the capacity reference. Local IsolatedHarness runs are correctness/smoke only.
+AWS hardware labels are the capacity reference. Runs on the in-process harness check
+correctness and serve as smoke tests; they say nothing about capacity. The figures above came
+from external runs and are not reproduced by CI.

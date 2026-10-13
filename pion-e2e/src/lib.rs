@@ -5,12 +5,10 @@
 //!
 //! # Getting started
 //!
-//! Prerequisites: workspace checkout; `CARGO_BUILD_JOBS=1` and `CARGO_TARGET_DIR=target-pion`
-//! recommended (see `docs/VERIFICATION.md`).
+//! Prerequisites: a checkout of the workspace (see the verification guide at
+//! [`docs/VERIFICATION.md`](https://github.com/unified-field-dev/pion/blob/main/docs/VERIFICATION.md)).
 //!
 //! ```bash
-//! export CARGO_BUILD_JOBS=1
-//! export CARGO_TARGET_DIR=target-pion
 //! cargo test -p pion-e2e
 //! ```
 //!

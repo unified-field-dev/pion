@@ -8,6 +8,8 @@ repository.workspace = true
 homepage.workspace = true
 description = "Cell control plane: heartbeat ingest, node/cell inventory, node-action queue, and host enrollment for Unified Field fleets"
 readme = "README.md"
+keywords = ["control-plane", "fleet", "heartbeat", "enrollment", "orchestration"]
+categories = ["network-programming", "asynchronous"]
 
 [lib]
 path = "src/lib.rs"

@@ -1,6 +1,6 @@
 # pion-e2e
 
-Matrix-driven **correctness** integration tests for Pion control-plane + Parton agent flows.
+Matrix-driven correctness integration tests for Pion control-plane + Parton agent flows.
 
 | | `pion/tests` | `pion-e2e` |
 |---|---|---|
@@ -15,10 +15,7 @@ Performance budgets belong in [`pion-bench`](../pion-bench/README.md).
 From the pion repo root:
 
 ```bash
-export CARGO_BUILD_JOBS=1
-export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-./target-pion-extract}"
-
-# Default: IsolatedHarness + Stub (must pass)
+# Default: in-process harness + stub executor (must pass)
 cargo test -p pion-e2e
 
 # LocalDocker (ignored unless Docker is available)

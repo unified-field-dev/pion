@@ -30,7 +30,7 @@ impl pion::runtime::HasValenceRouter for HttpAppState {
 
 /// Holds bootstrap state for one matrix row.
 ///
-/// Sets ownership env flags so `SQLite` / hybrid labs do not require Surreal-style ownership JOINs.
+/// Sets ownership env flags so `SQLite` / hybrid test setups do not require Surreal-style ownership JOINs.
 pub struct BootstrapSession {
     matrix: MatrixSpec,
     ready: bool,
@@ -46,7 +46,7 @@ impl BootstrapSession {
     ///
     /// # Errors
     ///
-    /// Returns an error if a non-lab topology is requested without install support yet.
+    /// Returns an error if a topology is requested without install support yet.
     pub fn new(matrix: MatrixSpec) -> Result<Self> {
         std::env::set_var("VALENCE_OWNERSHIP_UNIFIED_FETCH", "0");
         std::env::set_var("VALENCE_OWNERSHIP_COLOCATE", "0");

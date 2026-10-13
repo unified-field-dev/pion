@@ -7,15 +7,15 @@
 //!
 //! # Features
 //!
-//! - **Matrix rows** — [`MatrixSpec`] axes (topology / executor / backend / hardware)
-//! - **Lab session bootstrap** — [`BootstrapSession`] provides Valence plus an optional
-//!   Parton router for one matrix row ([Bootstrap a lab session](#bootstrap-a-lab-session))
-//! - **Scenarios** — [`ScenarioSpec`] / [`ScenarioStep`] declarative flows
-//! - **Runner** — [`ScenarioRunner`] executes a scenario against a session
-//!   ([Getting started](#getting-started))
-//! - **Bench image** — [`bench_image_ref`] / [`resolve_image_digest`] for deploy steps
-//! - **Remote Parton client** — [`RemoteParton`] / [`RemoteAgentConfig`] POST to
-//!   `{base_url}/agent/execute` ([Remote Parton](#remote-parton))
+//! - Matrix rows: [`MatrixSpec`] axes (topology, executor, backend, hardware).
+//! - Session bootstrap: [`BootstrapSession`] provides Valence plus an optional
+//!   Parton router for one matrix row ([Bootstrap a session](#bootstrap-a-session)).
+//! - Scenarios: [`ScenarioSpec`] / [`ScenarioStep`] declarative flows.
+//! - Runner: [`ScenarioRunner`] executes a scenario against a session
+//!   ([Getting started](#getting-started)).
+//! - Bench image: [`bench_image_ref`] / [`resolve_image_digest`] for deploy steps.
+//! - Remote Parton client: [`RemoteParton`] / [`RemoteAgentConfig`] POST to
+//!   `{base_url}/agent/execute` ([Remote Parton](#remote-parton)).
 //!
 //! # Getting started
 //!
@@ -44,9 +44,9 @@
 //! # }
 //! ```
 //!
-//! # Bootstrap a lab session
+//! # Bootstrap a session
 //!
-//! Lab session bootstrap provides a ready Valence handle (and optional ephemeral Parton
+//! Session bootstrap provides a ready Valence handle (and optional ephemeral Parton
 //! router) for one [`MatrixSpec`] row so e2e and bench scenarios can call control-plane APIs
 //! without hand-wiring storage.
 //!

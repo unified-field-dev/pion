@@ -1,13 +1,12 @@
-//! Pion + Parton benchmarks (`BM-R*` historical stub; `BM-D*` / `BM-DF*` edge deploy).
+//! Pion + Parton benchmarks: heartbeat round trip, deploy, teardown and firehose scenarios.
 //!
-//! Authoritative rows are AWS-only. Research questions and scope:
-//! [`PERFORMANCE.md`](../PERFORMANCE.md). List and run experiments with this CLI.
+//! Results are authoritative only for AWS hardware labels. Measured numbers and guidance are in
+//! [`PERFORMANCE.md`](https://github.com/unified-field-dev/pion/blob/main/pion-bench/PERFORMANCE.md).
+//! List and run experiments with this CLI.
 //!
 //! # Getting started
 //!
 //! ```bash
-//! export CARGO_BUILD_JOBS=1
-//! export CARGO_TARGET_DIR=target-pion
 //! cargo run -p pion-bench -- experiments
 //! cargo run -p pion-bench -- run --experiment bm-r0
 //! ```
@@ -34,7 +33,7 @@ use stats::MetricStats;
 #[derive(Debug, Parser)]
 #[command(
     name = "pion-bench",
-    about = "Pion/Parton benchmarks — AWS authoritative; shared nginx deployable"
+    about = "Pion/Parton benchmarks (AWS runs are authoritative; deploys use a shared nginx image)"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -68,13 +67,13 @@ enum Command {
         /// Executor (`stub` or `docker-cli`).
         #[arg(long, value_enum, default_value_t = ExecutorArg::Stub)]
         executor: ExecutorArg,
-        /// Firehose N (BM-DF1 / custom).
+        /// Firehose N (used by the `bm-df1` experiment).
         #[arg(long)]
         firehose_n: Option<u32>,
         /// Firehose concurrency.
         #[arg(long)]
         firehose_c: Option<u32>,
-        /// Agent count label for multi-agent efficiency rows (BM-DM1).
+        /// Agent count label for multi-agent efficiency rows (`bm-dm1`).
         #[arg(long, default_value_t = 1)]
         agent_count: u32,
     },
@@ -239,19 +238,19 @@ struct StepTimingReport {
 async fn main() -> Result<()> {
     match Cli::parse().command {
         Command::Experiments => {
-            println!("bm-d0   schedule enqueue→claim (fair-compare)");
+            println!("bm-d0   schedule enqueue→claim");
             println!("bm-d1   warm deploy → Ready (shared nginx image)");
             println!("bm-d2   teardown → Gone");
             println!("bm-d3   cold pull + deploy → Ready");
             println!("bm-df0  firehose N=50 c=4");
             println!("bm-df1  firehose N/c via --firehose-n/--firehose-c");
             println!("bm-dm1  multi-agent efficiency label (--agent-count)");
-            println!("bm-r0   heartbeat RTT (historical stub)");
-            println!("bm-r1   single deploy warm stub (historical)");
-            println!("bm-r2   single teardown stub (historical)");
-            println!("bm-rf0  firehose N=10 stub (historical)");
-            println!("bm-rf1  firehose N=50 stub (historical)");
-            println!("Authoritative: AWS hardware only (see EXPERIMENTS.md)");
+            println!("bm-r0   heartbeat round trip (in-process stub)");
+            println!("bm-r1   single deploy warm stub");
+            println!("bm-r2   single teardown stub");
+            println!("bm-rf0  firehose N=10 stub");
+            println!("bm-rf1  firehose N=50 stub");
+            println!("Authoritative: AWS hardware only (see pion-bench/PERFORMANCE.md)");
         }
         Command::Run {
             experiment,

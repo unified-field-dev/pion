@@ -9,9 +9,9 @@
 //!
 //! # Features
 //!
-//! - **Event topics** — [`event`] table names + `*_topic()` helpers
-//! - **Metric topics** — [`metric`] family names + `*_topic()` helpers
-//! - **Store id** — [`STORE`] (`"pion"`) shared by every registered schema
+//! - Event topics: [`event`] table names and `*_topic()` helpers.
+//! - Metric topics: [`metric`] family names and `*_topic()` helpers.
+//! - Store id: [`STORE`] (`"pion"`) shared by every registered schema.
 //!
 //! # Getting started
 //!

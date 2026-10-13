@@ -141,14 +141,14 @@ impl<'a> ScenarioRunner<'a> {
 
     /// Run all steps in `spec`, returning timings and optional error.
     ///
-    /// `IsolatedHarness` / `LocalDocker` / `AwsSameRegion` / `AwsWan` with Stub or `DockerCli` are supported.
+    /// `IsolatedHarness`, `LocalDocker`, `AwsSameRegion` and `AwsWan` topologies with the Stub or `DockerCli` executor are supported.
     /// `DockerCli` claims call Parton [`DockerCliActionExecutor`] on the blocking pool and wait
     /// for HTTP Ready on the published port.
     ///
     /// `AwsWan` executes identically to `AwsSameRegion` (Docker CLI is invoked against whatever
     /// host the `pion-bench`/`pion-e2e` process is running on); the distinction is the physical
     /// host the *caller* runs this process on (cross-region agent host vs. CP host) and the
-    /// `campaign_topology` label attached to reports.
+    /// topology label attached to reports.
     ///
     /// # Errors
     ///
@@ -794,7 +794,7 @@ async fn docker_rm_force_async(container_ref: String) -> Result<()> {
     Ok(())
 }
 
-/// Opts a freshly-heartbeating lab node into the deploy/stop capabilities the scenario steps
+/// Opts a freshly-heartbeating harness node into the deploy/stop capabilities the scenario steps
 /// exercise (`deploy_handoff` maps to `Deploy`, `teardown_handoff` maps to `Stop`).
 async fn enable_lab_node_capabilities(valence: &Valence, node_id: &str) -> Result<()> {
     for action in [ContainerActionKind::Deploy, ContainerActionKind::Stop] {

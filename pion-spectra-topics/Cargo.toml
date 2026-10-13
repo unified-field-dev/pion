@@ -6,7 +6,10 @@ license.workspace = true
 authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
-description = "Stable Spectra topic-name constants for pion's metrics / events (hand-written until spectra-codegen lands)"
+description = "Stable Spectra topic-name constants for pion's metrics and events"
+readme = "README.md"
+keywords = ["spectra", "telemetry", "metrics", "events", "pion"]
+categories = ["development-tools"]
 
 [lib]
 path = "src/lib.rs"

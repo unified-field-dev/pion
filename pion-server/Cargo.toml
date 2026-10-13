@@ -7,6 +7,9 @@ authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
 description = "Slim headless Pion control-plane server: Parton ingest routes plus health/readiness on Valence SQLite or Hybrid"
+readme = "README.md"
+keywords = ["control-plane", "fleet", "server", "prometheus", "heartbeat"]
+categories = ["web-programming::http-server", "network-programming"]
 
 [[bin]]
 name = "pion-server"
