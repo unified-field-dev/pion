@@ -22,7 +22,7 @@ When you change public API behavior, configuration, or wiring steps:
 
 ### Style
 
-- Organize crate-root docs by **task** (heartbeat ingest, node actions, enrollment, runtime mount).
+- Organize crate-root docs by task (heartbeat ingest, node actions, enrollment, runtime mount).
 - Put full code snippets on the item that owns the API; the crate root links without duplicating.
 - Generated Valence models under [`pion/src/generated.rs`](pion/src/generated.rs) are excluded from
   missing-docs via an explicit allow block — do not edit generated output by hand.
@@ -33,8 +33,6 @@ Workspace lints live in the root [`Cargo.toml`](Cargo.toml) (`[workspace.lints.*
 Library and binary crates inherit them via `[lints] workspace = true`. CI-equivalent gate:
 
 ```bash
-export CARGO_BUILD_JOBS=1
-export CARGO_TARGET_DIR=target-pion
 cargo clippy -p pion --all-targets --features runtime -- -D warnings
 cargo clippy -p pion-server --all-targets -- -D warnings
 ```
@@ -58,8 +56,8 @@ cargo clippy -p pion-server --all-targets -- -D warnings
 | `rustdoc::missing_crate_level_docs` | deny | Crate-level `//!` required |
 
 Pedantic is enabled at warn (CI denies via `-D warnings`); nursery is allowed.
-`too_many_lines` / `cognitive_complexity` are warn — prefer extracting helpers; only
-`#[allow(...)]` with a one-line reason when a refactor would risk behavior change.
+`too_many_lines` and `cognitive_complexity` are deny. Prefer extracting helpers, and use
+`#[allow(...)]` with a one-line reason only when a refactor would risk behavior change.
 
 ### Logging
 
@@ -77,13 +75,14 @@ Do not re-add broad workspace `allow`s for restriction lints without discussion.
 
 ### Error handling
 
-Prefer typed errors (`thiserror`) for public matchable APIs — [`EnrollmentError`],
-[`NodeActionError`] — and `anyhow::Result` with `.context()` at Valence/HTTP glue
-boundaries. Document failure modes in `# Errors`.
+Prefer typed errors (`thiserror`) for public matchable APIs, such as
+[`EnrollmentError`](pion/src/control_plane/agent_enrollment/error.rs) and
+[`NodeActionError`](pion/src/control_plane/node_actions/error.rs), and `anyhow::Result` with
+`.context()` at Valence/HTTP glue boundaries. Document failure modes in `# Errors`.
 
 ### Structure budgets
 
-Production module files: soft max **500** LOC / hard max **800** LOC (excluding `#[cfg(test)]`
+Production module files: soft max 500 LOC, hard max 800 LOC (excluding `#[cfg(test)]`
 and generated code). Prefer domain `mod` directories; no kitchen-sink `utils`. Clippy denies
 `too_many_lines` (≤120), `too_many_arguments` (≤7), and `cognitive_complexity`.
 
@@ -112,8 +111,6 @@ the RustSec advisory gate (no separate `cargo-audit` job). See
 CI runs on every push and PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
 
 ```bash
-export CARGO_BUILD_JOBS=1
-export CARGO_TARGET_DIR=target-pion
 cargo fmt --all --check
 cargo check -p pion --features runtime
 cargo check -p pion-server
@@ -133,5 +130,3 @@ See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the full command block.
 
 Follow [`SECURITY.md`](SECURITY.md) for vulnerability reporting when changing auth,
 enrollment, enqueue, or agent HTTP surfaces. SPIFFE guide: [`docs/spiffe.md`](docs/spiffe.md).
-
-Coverage floor is **50%** lines (ratchet toward 90%).

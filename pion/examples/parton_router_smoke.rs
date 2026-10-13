@@ -1,8 +1,8 @@
-//! Mount `parton_router` and POST one heartbeat (`SQLite` `:memory:`, insecure lab auth).
+//! Mount `parton_router` and POST one heartbeat (`SQLite` `:memory:`, insecure local auth).
 //!
 //! ## Command
 //! ```bash
-//! PION_ALLOW_INSECURE=1 PARTON_ENROLLMENT_STRICT_NEW_NODES=0 CARGO_BUILD_JOBS=1 \
+//! PION_ALLOW_INSECURE=1 PARTON_ENROLLMENT_STRICT_NEW_NODES=0 \
 //!   cargo run -p pion --example parton_router_smoke --features runtime
 //! ```
 //!

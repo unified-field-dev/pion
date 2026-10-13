@@ -5,13 +5,10 @@ for the lint policy these commands enforce.
 
 ## Environment
 
-Match [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) workflow `env`. Use a single
-build job and a dedicated target dir so local verification does not collide with other
-workspaces on the same machine:
+Match the `env` block of [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) so warnings
+fail locally as they do in CI:
 
 ```bash
-export CARGO_BUILD_JOBS=1
-export CARGO_TARGET_DIR=target-pion
 export RUSTFLAGS="-D warnings"
 export PION_ALLOW_INSECURE=1
 ```

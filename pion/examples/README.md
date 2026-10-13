@@ -12,7 +12,7 @@ the `pion` package.
 Mount Parton agent routes in-process before you run `pion-server`.
 
 ```bash
-PION_ALLOW_INSECURE=1 PARTON_ENROLLMENT_STRICT_NEW_NODES=0 CARGO_BUILD_JOBS=1 \
+PION_ALLOW_INSECURE=1 PARTON_ENROLLMENT_STRICT_NEW_NODES=0 \
   cargo run -p pion --example parton_router_smoke --features runtime
 ```
 
