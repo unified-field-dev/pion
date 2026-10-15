@@ -1,8 +1,9 @@
 //! Typed enrollment verify / claim failures for matchable library APIs.
 
-/// Failure reasons for enrollment token verification and new-node validation.
+/// Failure reasons for enrollment ticket creation, token verification and new-node validation.
 ///
-/// Returned by enrollment validation / verify helpers used during heartbeat ingest. Callers that
+/// Returned by enrollment validation / verify helpers used during heartbeat ingest, and (inside
+/// [`anyhow::Error`], via `downcast_ref`) by [`super::create_host_enrollment`]. Callers that
 /// need to distinguish "expired" vs "bad token" vs "source IP mismatch" can match on this enum.
 /// Storage failures are wrapped in [`EnrollmentError::Internal`]. Converts into [`anyhow::Error`]
 /// via `?`.
@@ -32,6 +33,9 @@ pub enum EnrollmentError {
     /// Heartbeat `cell_id` does not match the enrollment row's cell.
     #[error("heartbeat cell_id does not match enrollment")]
     CellIdMismatch,
+    /// [`super::create_host_enrollment`] got a blank `bootstrap_session_id`.
+    #[error("bootstrap session id is required to create a host enrollment")]
+    BootstrapSessionIdRequired,
     /// Valence / persistence failure while loading or updating enrollment.
     #[error(transparent)]
     Internal(#[from] anyhow::Error),

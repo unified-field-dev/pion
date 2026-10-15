@@ -8,6 +8,7 @@ use valence::{Model, Valence};
 use crate::generated::{PionAgentHostEnrollment, PionAgentHostEnrollmentStatus};
 
 use super::config::{normalize_agent_host_hint, DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID};
+use super::error::EnrollmentError;
 use super::token::{build_full_token, hex_sha256};
 
 /// Placeholder datetime for "unset" optional fields in generated models.
@@ -18,6 +19,9 @@ fn unset_dt() -> chrono::DateTime<Utc> {
 /// Creates a **pending** host enrollment ticket for strict agent bootstrap flows.
 ///
 /// Persists a [`crate::generated::PionAgentHostEnrollment`] row and returns `(enrollment_id, wire_token)`.
+/// `bootstrap_session_id` groups the tickets of one bootstrap run so
+/// [`list_enrollments_for_bootstrap_session`] can find them. It is stored in the row's
+/// `setup_wizard_session_id` column.
 /// The wire token (`ghe.<id>.<secret>`) is shown once to the operator; the agent presents it on
 /// heartbeat until the row transitions to **claimed**.
 ///
@@ -29,6 +33,8 @@ fn unset_dt() -> chrono::DateTime<Utc> {
 /// # Errors
 ///
 /// Returns `Err` when Valence upsert fails or the row fails validation at construction time.
+/// A blank `bootstrap_session_id` is rejected before any write with an error that downcasts to
+/// [`super::EnrollmentError::BootstrapSessionIdRequired`].
 ///
 /// # Examples
 ///
@@ -51,10 +57,14 @@ pub async fn create_host_enrollment(
     valence: &Valence,
     expected_agent_host: String,
     cell_id: String,
-    setup_wizard_session_id: String,
+    bootstrap_session_id: String,
     ttl_secs: i64,
 ) -> Result<(String, String)> {
-    let session_id_for_photon = setup_wizard_session_id.clone();
+    let bootstrap_session_id = bootstrap_session_id.trim().to_string();
+    if bootstrap_session_id.is_empty() {
+        return Err(EnrollmentError::BootstrapSessionIdRequired.into());
+    }
+    let session_id_for_photon = bootstrap_session_id.clone();
     let enrollment_id = Uuid::new_v4().to_string();
     let secret: String = Uuid::new_v4().simple().to_string();
     let wire = build_full_token(&enrollment_id, &secret);
@@ -68,7 +78,7 @@ pub async fn create_host_enrollment(
         cell_id,
         PionAgentHostEnrollmentStatus::Pending,
         String::new(),
-        setup_wizard_session_id,
+        bootstrap_session_id,
         now,
         expires_at,
         unset,
@@ -177,7 +187,10 @@ pub async fn list_enrollments_for_session(
     list_enrollments_for_bootstrap_session(valence, setup_wizard_session_id).await
 }
 
-/// Neutral alias for [`list_enrollments_for_session`].
+/// List enrollments created for a bootstrap session (pending, claimed and revoked), oldest first.
+///
+/// A blank or unknown `bootstrap_session_id` returns an empty list. Rows stored with a blank
+/// session id are listed under [`super::DEFAULT_BOOTSTRAP_SESSION_RECORD_ID`].
 ///
 /// # Errors
 ///
@@ -186,33 +199,34 @@ pub async fn list_enrollments_for_bootstrap_session(
     valence: &Valence,
     bootstrap_session_id: &str,
 ) -> Result<Vec<PionAgentHostEnrollment>> {
+    let q = bootstrap_session_id.trim();
+    if q.is_empty() {
+        return Ok(Vec::new());
+    }
     let mut rows = PionAgentHostEnrollment::query(valence, valence::use_!("In **Pion control plane**, we **list Pion Agent Host Enrollment** so the product can show or process the matching set for this workflow. Callers allowed for **Pion control plane** use the list; it is not a public dump of every field to anonymous visitors."))
         .await
         .context("query host enrollments for session list")?;
-    let q = bootstrap_session_id.trim();
-    rows.retain(|r| {
-        let row_sid = r.setup_wizard_session_id().trim();
-        row_sid == q || (q == DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID && row_sid.is_empty())
-    });
+    rows.retain(|r| session_matches(r.setup_wizard_session_id(), q));
     rows.sort_by_key(|r| *r.created_at());
     Ok(rows)
 }
 
+/// Whether a row's stored session id belongs to the (trimmed, non-blank) query.
+fn session_matches(row_sid: &str, query: &str) -> bool {
+    let row_sid = row_sid.trim();
+    row_sid == query || (query == DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID && row_sid.is_empty())
+}
+
 #[cfg(test)]
 mod tests {
-    use super::DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID;
+    use super::session_matches;
 
     #[test]
     fn list_enrollments_for_session_filter_includes_blank_session_for_default_query() {
-        let keep = |row_sid: &str, query: &str| {
-            let row_sid = row_sid.trim();
-            let query = query.trim();
-            row_sid == query
-                || (query == DEFAULT_SETUP_WIZARD_SESSION_RECORD_ID && row_sid.is_empty())
-        };
-        assert!(keep("default", "default"));
-        assert!(keep("", "default"));
-        assert!(!keep("", "other"));
-        assert!(keep("other", "other"));
+        assert!(session_matches("default", "default"));
+        assert!(session_matches("", "default"));
+        assert!(!session_matches("", "other"));
+        assert!(session_matches("other", "other"));
+        assert!(!session_matches("other", "default"));
     }
 }
