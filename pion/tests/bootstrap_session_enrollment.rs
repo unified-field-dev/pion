@@ -54,10 +54,14 @@ async fn unknown_or_blank_session_lists_nothing() -> anyhow::Result<()> {
     )
     .await?;
 
-    assert!(list_enrollments_for_bootstrap_session(&v, "no-such-session")
+    assert!(
+        list_enrollments_for_bootstrap_session(&v, "no-such-session")
+            .await?
+            .is_empty()
+    );
+    assert!(list_enrollments_for_bootstrap_session(&v, "")
         .await?
         .is_empty());
-    assert!(list_enrollments_for_bootstrap_session(&v, "").await?.is_empty());
     assert!(list_enrollments_for_bootstrap_session(&v, "   ")
         .await?
         .is_empty());

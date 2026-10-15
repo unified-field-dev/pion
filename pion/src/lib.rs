@@ -9,31 +9,37 @@
 //!
 //! # Features
 //!
-//! - Heartbeat ingest: upsert node/cell inventory with [`ingest_agent_heartbeat`] /
-//!   [`ingest_node_heartbeat`] ([Heartbeat ingest](#heartbeat-ingest)).
-//! - Node-action queue: enqueue, claim, lease, and report with [`enqueue_node_action`],
-//!   [`claim_pending_node_action`], [`report_node_action_result`], and
-//!   [`list_node_action_capability_map`] ([Node-action queue](#node-action-queue)).
-//! - Host enrollment: one-time `ghe.<id>.<secret>` tickets via [`create_host_enrollment`]
-//!   and [`list_enrollments_for_session`] ([Host enrollment](#host-enrollment)).
-//! - Handoff directives: mint and deliver signed Parton directives with
-//!   [`sign_re_enroll_directive`] and [`collect_handoff_directives_for_heartbeat`]
-//!   ([Handoff directives](#handoff-directives)).
-//! - System-owned handoff schema: authority handoff and agent directive rows are
-//!   `SYSTEM_ONLY` for create/update/delete so interactive session actors cannot
-//!   mutate them directly ([System-owned handoff rows](#system-owned-handoff-rows)).
-//! - Secret-ref at claim: `$secret_ref` placeholders resolve only at claim through
-//!   [`try_resolve_one_secret_ref`], [`resolve_secrets_in_json`], and [`SecretResolver`]
-//!   ([Secret-ref at claim](#secret-ref-at-claim)).
-//! - HTTP Parton surface: mount [`runtime::parton_router`] (see [`runtime::HasValenceRouter`])
-//!   ([HTTP Parton surface](#http-parton-surface)).
-//! - Auth, SPIFFE and rate limits: fail-closed token or SPIFFE on agent routes in [`runtime`]
-//!   ([Auth, SPIFFE, and rate limits](#auth-spiffe-and-rate-limits)).
-//! - Spectra and Prometheus: product telemetry in [`logging`] and scrape metrics in
-//!   [`prom_metrics`] ([Spectra and Prometheus](#spectra-and-prometheus)).
-//! - Orchestrator hooks: process-local bootstrap and mount-stats notification via
-//!   [`bootstrap_notify`] and [`registry_storage_notify`]
-//!   ([Orchestrator hooks](#orchestrator-hooks)).
+//! - **Heartbeat ingest** — Turns each agent heartbeat into up-to-date node and cell inventory
+//!   with [`ingest_agent_heartbeat`] / [`ingest_node_heartbeat`], so the control plane always
+//!   knows which hosts are alive. [Heartbeat ingest](#heartbeat-ingest)
+//! - **Node-action queue** — Lets the control plane enqueue work for one agent, which claims it
+//!   under a lease and reports the result: [`enqueue_node_action`],
+//!   [`claim_pending_node_action`], [`report_node_action_result`] and
+//!   [`list_node_action_capability_map`]. [Node-action queue](#node-action-queue)
+//! - **Host enrollment** — Issues one-time `ghe.<id>.<secret>` tickets with
+//!   [`create_host_enrollment`] so a new host can join under strict enrollment; tickets are filed
+//!   under a bootstrap session and listed with [`list_enrollments_for_bootstrap_session`].
+//!   [Host enrollment](#host-enrollment)
+//! - **Handoff directives** — Mints signed Parton directives with [`sign_re_enroll_directive`]
+//!   and delivers them on the next heartbeat with [`collect_handoff_directives_for_heartbeat`]
+//!   when a host must re-enroll elsewhere. [Handoff directives](#handoff-directives)
+//! - **System-owned handoff schema** — Keeps authority handoff and agent directive rows
+//!   `SYSTEM_ONLY` for create, update and delete, so interactive session actors cannot change
+//!   them directly. [System-owned handoff rows](#system-owned-handoff-rows)
+//! - **Secret-ref at claim** — Resolves `$secret_ref` placeholders only when an agent claims an
+//!   action, through [`try_resolve_one_secret_ref`], [`resolve_secrets_in_json`] and
+//!   [`SecretResolver`], so queued payloads never hold secret values.
+//!   [Secret-ref at claim](#secret-ref-at-claim)
+//! - **HTTP Parton surface** — Serves the agent API when you mount [`runtime::parton_router`]
+//!   (see [`runtime::HasValenceRouter`]) on a host's router. [HTTP Parton surface](#http-parton-surface)
+//! - **Auth, SPIFFE and rate limits** — Fails closed on agent routes in [`runtime`], accepting a
+//!   token or a SPIFFE identity and rate-limiting callers.
+//!   [Auth, SPIFFE, and rate limits](#auth-spiffe-and-rate-limits)
+//! - **Spectra and Prometheus** — Emits product telemetry through [`logging`] and exposes scrape
+//!   metrics through [`prom_metrics`]. [Spectra and Prometheus](#spectra-and-prometheus)
+//! - **Orchestrator hooks** — Notifies an orchestrator in the same process about bootstrap and
+//!   mount-stats events via [`bootstrap_notify`] and [`registry_storage_notify`], with no
+//!   compile-time dependency on it. [Orchestrator hooks](#orchestrator-hooks)
 //!
 //! # Getting started
 //!
@@ -101,36 +107,72 @@
 //!
 //! # Host enrollment
 //!
-//! Mint a pending host enrollment row and one-time wire token for strict agent bootstrap.
+//! Host enrollment gives a new host a one-time ticket so its Parton agent can join the control
+//! plane under strict enrollment, without a shared secret baked into the image. Each ticket is
+//! filed under a bootstrap session id, so the installer or bootstrap run that minted the tickets
+//! can later list exactly the hosts it brought up. An installer or bootstrap job creates one
+//! ticket per host when it reserves that host, before the host first boots; the agent presents
+//! the token on its first heartbeat.
 //!
 //! Prerequisites: `runtime` feature; Valence control-plane DB. Wire form is
 //! `ghe.<enrollment_id>.<secret>` (shown once).
 //!
-//! 1. Call [`create_host_enrollment`] with expected agent host, cell, session id, and TTL seconds.
-//! 2. Give the operator the returned `wire_token`; the agent presents it on heartbeat.
-//! 3. List with [`list_enrollments_for_session`] / [`list_enrollments_for_bootstrap_session`].
-//!
-//! Failures: Valence upsert / validation errors. Source-IP checks apply at verify time when
-//! `PARTON_ENROLLMENT_VERIFY_SOURCE_IP` is on (default). Next: [Heartbeat ingest](#heartbeat-ingest).
+//! 1. Call [`create_host_enrollment`] with expected agent host, cell, bootstrap session id, and
+//!    TTL seconds.
+//! 2. Hand the returned `wire_token` to the host (cloud-init or the operator); the agent presents
+//!    it on heartbeat, which claims the ticket.
+//! 3. List the session's tickets with [`list_enrollments_for_bootstrap_session`] to see which
+//!    hosts have claimed theirs.
 //!
 //! ```no_run
 //! # #[cfg(feature = "runtime")]
 //! # {
-//! use pion::create_host_enrollment;
+//! use pion::{create_host_enrollment, list_enrollments_for_bootstrap_session};
+//! use pion::generated::PionAgentHostEnrollmentStatus;
 //! # async fn demo(valence: &valence::Valence) -> anyhow::Result<()> {
 //! let (enrollment_id, wire_token) = create_host_enrollment(
 //!     valence,
 //!     "10.0.0.1".into(),
 //!     "local-default".into(),
-//!     "default".into(),
+//!     "install-7".into(),
 //!     3600,
 //! ).await?;
 //! assert!(!enrollment_id.is_empty());
 //! assert!(wire_token.starts_with("ghe."));
+//!
+//! let tickets = list_enrollments_for_bootstrap_session(valence, "install-7").await?;
+//! assert_eq!(tickets.len(), 1);
+//! assert_eq!(*tickets[0].status(), PionAgentHostEnrollmentStatus::Pending);
 //! # Ok(())
 //! # }
 //! # }
 //! ```
+//!
+//! Failures: a blank bootstrap session id is rejected before anything is written, with an error
+//! that downcasts to [`EnrollmentError::BootstrapSessionIdRequired`]; Valence upsert and
+//! validation errors pass through. Listing a blank or unknown session id returns an empty list,
+//! and tickets stored with no session id are listed under
+//! [`DEFAULT_BOOTSTRAP_SESSION_RECORD_ID`]. Source-IP checks apply at verify time when
+//! `PARTON_ENROLLMENT_VERIFY_SOURCE_IP` is on (default).
+//!
+//! ```no_run
+//! # #[cfg(feature = "runtime")]
+//! # {
+//! use pion::{create_host_enrollment, EnrollmentError};
+//! # async fn demo(valence: &valence::Valence) {
+//! let err = create_host_enrollment(valence, String::new(), "local-default".into(), " ".into(), 3600)
+//!     .await
+//!     .unwrap_err();
+//! assert!(matches!(
+//!     err.downcast_ref::<EnrollmentError>(),
+//!     Some(EnrollmentError::BootstrapSessionIdRequired)
+//! ));
+//! # }
+//! # }
+//! ```
+//!
+//! Next: [Heartbeat ingest](#heartbeat-ingest), where the agent's first heartbeat claims the
+//! ticket.
 //!
 //! # Node-action queue
 //!
