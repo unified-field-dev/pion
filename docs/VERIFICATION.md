@@ -30,14 +30,6 @@ Required PR jobs in `ci.yml` and the local commands that match them:
 | `coverage` | `cargo llvm-cov -p pion --features runtime --fail-under-lines 50 --summary-only` |
 | `bench-smoke` | `cargo check -p pion-bench` |
 
-## Parity runs
-
-| Date | Branch | Content SHA | Ran | Still pending |
-|------|--------|-------------|-----|---------------|
-| 2026-10-28 | `feat/service-user` | `1a5aefa` | Full PR CI parity on a 16-vCPU box, every `ci.yml` job green: `fmt`, `check`, `clippy`, `test`, `docs`, `deny`, `audit`, `coverage` (≥50% lines) and `bench-smoke`. Run twice: once as parallel lanes in the worktree (longest lane 3.4 min) and once from a clean clone of the exact SHA outside the workspace, with UF git deps resolved against current `unified-field-dev` `main`. Includes the tokio / rustls-webpki / webpki-roots advisory bump; `cargo deny check` and `cargo audit` clean. | None. |
-
-The SHA is the branch content under test; this evidence row adds only docs on top of it.
-
 ## Commands
 
 Run these in order; each must pass with no warnings (same block as PR CI):
